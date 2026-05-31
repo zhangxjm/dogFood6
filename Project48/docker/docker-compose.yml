@@ -1,0 +1,95 @@
+version: '3.8'
+
+services:
+  influxdb:
+    image: influxdb:2.7-alpine
+    container_name: iiot-influxdb
+    restart: unless-stopped
+    ports:
+      - "8086:8086"
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=admin123
+      - DOCKER_INFLUXDB_INIT_ORG=iiot-org
+      - DOCKER_INFLUXDB_INIT_BUCKET=iiot-data
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=iiot-super-secret-token-12345
+    volumes:
+      - ../data/influxdb:/var/lib/influxdb2
+    healthcheck:
+      test: ["CMD", "influx", "ping"]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+
+  mosquitto:
+    image: eclipse-mosquitto:2.0-openssl
+    container_name: iiot-mqtt
+    restart: unless-stopped
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ../data/mosquitto/config:/mosquitto/config
+      - ../data/mosquitto/data:/mosquitto/data
+      - ../data/mosquitto/log:/mosquitto/log
+
+  backend:
+    build:
+      context: ..
+      dockerfile: docker/backend.Dockerfile
+    container_name: iiot-backend
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    depends_on:
+      influxdb:
+        condition: service_healthy
+    environment:
+      - SERVER_HOST=0.0.0.0
+      - SERVER_PORT=8080
+      - DATABASE_URL=/app/data/app.db
+      - JWT_SECRET=production-secret-key-change-this-in-production
+      - JWT_EXPIRE_HOURS=24
+      - INFLUXDB_URL=http://influxdb:8086
+      - INFLUXDB_TOKEN=iiot-super-secret-token-12345
+      - INFLUXDB_ORG=iiot-org
+      - INFLUXDB_BUCKET=iiot-data
+    volumes:
+      - ../data:/app/data
+
+  ai-service:
+    build:
+      context: ..
+      dockerfile: docker/ai-service.Dockerfile
+    container_name: iiot-ai-service
+    restart: unless-stopped
+    ports:
+      - "50051:50051"
+    depends_on:
+      - influxdb
+    environment:
+      - INFLUXDB_URL=http://influxdb:8086
+      - INFLUXDB_TOKEN=iiot-super-secret-token-12345
+      - INFLUXDB_ORG=iiot-org
+      - INFLUXDB_BUCKET=iiot-data
+      - GRPC_PORT=50051
+    volumes:
+      - ../data:/app/data
+
+  frontend:
+    build:
+      context: ..
+      dockerfile: docker/frontend.Dockerfile
+    container_name: iiot-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    environment:
+      - VITE_API_BASE_URL=http://localhost:8080/api
+
+volumes:
+  influxdb-data:
+  mosquitto-data:

@@ -1,0 +1,97 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            <i class="fa fa-list-alt me-2 text-primary"></i>订单管理
+        </h2>
+        <a href="/orders/new" class="btn btn-primary">
+            <i class="fa fa-plus me-2"></i>新建预约
+        </a>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <ul class="nav nav-pills">
+                <li class="nav-item">
+                    <a class="nav-link <%= status === 'all' ? 'active' : '' %>" href="/orders">全部订单</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <%= status === 'pending' ? 'active' : '' %>" href="/orders?status=pending">待处理</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <%= status === 'assigned' ? 'active' : '' %>" href="/orders?status=assigned">已派单</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <%= status === 'processing' ? 'active' : '' %>" href="/orders?status=processing">维修中</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <%= status === 'completed' ? 'active' : '' %>" href="/orders?status=completed">已完成</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <% if (orders.length === 0) { %>
+        <div class="card">
+            <div class="card-body text-center py-5">
+                <div class="h1 text-muted mb-3"><i class="fa fa-inbox"></i></div>
+                <h4>暂无订单</h4>
+                <p class="text-muted">点击右上角按钮创建第一个预约订单</p>
+                <a href="/orders/new" class="btn btn-primary mt-2">立即预约</a>
+            </div>
+        </div>
+    <% } else { %>
+        <div class="row">
+            <% orders.forEach(function(order) { %>
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <span class="small text-muted"><%= order.order_no %></span>
+                            <span class="badge status-badge 
+                                <%= order.status === 'pending' ? 'bg-secondary' : '' %>
+                                <%= order.status === 'assigned' ? 'bg-info' : '' %>
+                                <%= order.status === 'processing' ? 'bg-warning text-dark' : '' %>
+                                <%= order.status === 'completed' ? 'bg-success' : '' %>
+                            ">
+                                <%= statusMap[order.status] %>
+                            </span>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title"><%= order.service_name %></h5>
+                            <p class="mb-2">
+                                <i class="fa fa-user me-2 text-muted"></i><%= order.customer_name %>
+                            </p>
+                            <p class="mb-2">
+                                <i class="fa fa-phone me-2 text-muted"></i><%= order.customer_phone %>
+                            </p>
+                            <p class="mb-2">
+                                <i class="fa fa-map-marker me-2 text-muted"></i><%= order.customer_address.substring(0, 20) %>...
+                            </p>
+                            <p class="mb-2">
+                                <i class="fa fa-calendar me-2 text-muted"></i><%= order.appointment_date %> <%= order.appointment_time %>
+                            </p>
+                            <% if (order.technician_name) { %>
+                                <p class="mb-2">
+                                    <i class="fa fa-user-circle me-2 text-muted"></i><%= order.technician_name %>
+                                </p>
+                            <% } %>
+                            <p class="text-primary fw-bold mb-0">
+                                <i class="fa fa-jpy me-1"></i><%= order.total_price %>
+                            </p>
+                        </div>
+                        <div class="card-footer bg-white">
+                            <div class="d-grid gap-2">
+                                <a href="/orders/<%= order.id %>" class="btn btn-outline-primary btn-sm">
+                                    <i class="fa fa-eye me-2"></i>查看详情
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+    <% } %>
+</div>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: aerospace-test-server
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./server/data:/app/data
+      - ./server/uploads:/app/uploads
+      - ./server/reports:/app/reports
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: aerospace-test-client
+    ports:
+      - "80:80"
+    depends_on:
+      server:
+        condition: service_healthy
+    restart: unless-stopped

@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: energy-management
+
+  datasource:
+    url: jdbc:sqlite:energy.db
+    driver-class-name: org.sqlite.JDBC
+    username: admin
+    password: admin
+
+  jpa:
+    database-platform: org.hibernate.community.dialect.SQLiteDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+
+  elasticsearch:
+    uris: http://localhost:9200
+
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+logging:
+  level:
+    com.energy: INFO
+    org.springframework: INFO

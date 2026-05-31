@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}播放排班 - 校园广播站管理系统{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>📅 一周播放排班表</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>星期</th>
+                <th>节目名称</th>
+                <th>开始时间</th>
+                <th>结束时间</th>
+                <th>主持人</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for weekday, schedules in schedule_by_day.items %}
+                {% for schedule in schedules %}
+                <tr>
+                    {% if forloop.first %}
+                    <td rowspan="{{ schedules|length }}">{{ weekday }}</td>
+                    {% endif %}
+                    <td>{{ schedule.program.name }}</td>
+                    <td>{{ schedule.start_time }}</td>
+                    <td>{{ schedule.end_time }}</td>
+                    <td>{{ schedule.program.host }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td>{{ weekday }}</td>
+                    <td colspan="4" style="color: #999; text-align: center;">暂无排班</td>
+                </tr>
+                {% endfor %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

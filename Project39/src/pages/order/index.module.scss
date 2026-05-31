@@ -1,0 +1,77 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding-bottom: 40rpx;
+}
+
+.header {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  padding: 40rpx $page-padding 32rpx;
+}
+
+.title {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  color: $color-text-white;
+}
+
+.filterScroll {
+  white-space: nowrap;
+  padding: $spacing-md $page-padding 0;
+}
+
+.filterList {
+  display: flex;
+  flex-direction: row;
+}
+
+.filterItem {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14rpx 28rpx;
+  border-radius: $radius-round;
+  background: $color-bg-card;
+  margin-right: $spacing-sm;
+  box-shadow: $shadow-card;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.9;
+  }
+}
+
+.filterItemActive {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+}
+
+.filterText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  white-space: nowrap;
+}
+
+.filterTextActive {
+  color: $color-text-white;
+  font-weight: $font-weight-medium;
+}
+
+.orderList {
+  padding: $spacing-md $page-padding 0;
+}
+
+.emptyWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 120rpx 0;
+}
+
+.emptyText {
+  font-size: $font-size-md;
+  color: $color-text-tertiary;
+  margin-top: $spacing-md;
+}

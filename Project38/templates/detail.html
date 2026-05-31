@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+{% block title %}{{ post.title }} - 方言文化分享平台{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="detail-layout">
+        <div class="detail-main">
+            <article class="detail-card">
+                <div class="detail-header">
+                    <div class="detail-region-tag">
+                        <i class="fas fa-map-marker-alt"></i> {{ post.region_info.name if post.region_info else '未分类' }}
+                    </div>
+                    <h1 class="detail-title">{{ post.title }}</h1>
+                    <div class="detail-meta">
+                        <div class="detail-author">
+                            {% if post.author.avatar %}
+                            <img src="{{ url_for('static', filename='uploads/' + post.author.avatar) }}" alt="" class="avatar-small">
+                            {% else %}
+                            <div class="avatar-placeholder-small">{{ (post.author.nickname or post.author.username)[0] }}</div>
+                            {% endif %}
+                            <div>
+                                <a href="{{ url_for('user_profile', user_id=post.author.id) }}" class="author-name">{{ post.author.nickname or post.author.username }}</a>
+                                <span class="post-time">{{ post.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+                            </div>
+                        </div>
+                        <div class="detail-actions-bar">
+                            <span class="stat-item"><i class="fas fa-eye"></i> {{ post.views_count or 0 }} 次浏览</span>
+                            {% if current_user and current_user.id == post.user_id %}
+                            <a href="{{ url_for('edit_post', post_id=post.id) }}" class="btn btn-sm btn-outline"><i class="fas fa-edit"></i> 编辑</a>
+                            <form action="{{ url_for('delete_post', post_id=post.id) }}" method="post" style="display:inline" onsubmit="return confirm('确定要删除吗？')">
+                                <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i> 删除</button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                {% if post.description %}
+                <div class="detail-section">
+                    <h3><i class="fas fa-info-circle"></i> 内容介绍</h3>
+                    <p>{{ post.description }}</p>
+                </div>
+                {% endif %}
+
+                {% if post.dialect_text %}
+                <div class="detail-section dialect-section">
+                    <h3><i class="fas fa-comment-dots"></i> 方言原文</h3>
+                    <div class="dialect-text">{{ post.dialect_text }}</div>
+                    {% if post.translation %}
+                    <div class="translation">
+                        <span class="translation-label"><i class="fas fa-language"></i> 普通话翻译：</span>
+                        {{ post.translation }}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                {% if post.audio_path %}
+                <div class="detail-section audio-section">
+                    <h3><i class="fas fa-headphones"></i> 方言音频</h3>
+                    <div class="audio-player-wrapper">
+                        <audio controls class="audio-player" preload="metadata">
+                            <source src="{{ url_for('static', filename='uploads/' + post.audio_path) }}" type="audio/mpeg">
+                            您的浏览器不支持音频播放
+                        </audio>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="detail-interaction">
+                    <button class="like-btn {% if is_liked %}liked{% endif %}" data-post-id="{{ post.id }}" onclick="toggleLike(this)">
+                        <i class="fas fa-heart"></i>
+                        <span class="like-count">{{ post.likes_count or 0 }}</span>
+                        <span class="like-text">{% if is_liked %}已点赞{% else %}点赞{% endif %}</span>
+                    </button>
+                    <a href="#comments" class="btn btn-outline">
+                        <i class="fas fa-comment"></i> 评论 ({{ post.comments.count() }})
+                    </a>
+                </div>
+            </article>
+
+            <section class="comments-section" id="comments">
+                <h2 class="section-title"><i class="fas fa-comments"></i> 留言交流 ({{ post.comments.count() }})</h2>
+
+                {% if current_user %}
+                <form class="comment-form" action="{{ url_for('add_comment', post_id=post.id) }}" method="post">
+                    <div class="comment-input-wrapper">
+                        {% if current_user.avatar %}
+                        <img src="{{ url_for('static', filename='uploads/' + current_user.avatar) }}" alt="" class="avatar-small">
+                        {% else %}
+                        <div class="avatar-placeholder-small">{{ (current_user.nickname or current_user.username)[0] }}</div>
+                        {% endif %}
+                        <textarea name="content" placeholder="说说你的看法..." rows="3" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> 发表评论</button>
+                </form>
+                {% else %}
+                <div class="login-prompt">
+                    <p>请先<a href="{{ url_for('login', next=request.url) }}">登录</a>后参与评论</p>
+                </div>
+                {% endif %}
+
+                <div class="comments-list">
+                    {% for comment in comments %}
+                    <div class="comment-item">
+                        <div class="comment-header">
+                            <div class="comment-author">
+                                {% if comment.commenter.avatar %}
+                                <img src="{{ url_for('static', filename='uploads/' + comment.commenter.avatar) }}" alt="" class="avatar-small">
+                                {% else %}
+                                <div class="avatar-placeholder-small">{{ (comment.commenter.nickname or comment.commenter.username)[0] }}</div>
+                                {% endif %}
+                                <span class="comment-name">{{ comment.commenter.nickname or comment.commenter.username }}</span>
+                                <span class="comment-time">{{ comment.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+                            </div>
+                            {% if current_user and current_user.id == comment.user_id %}
+                            <form action="{{ url_for('delete_comment', comment_id=comment.id) }}" method="post" onsubmit="return confirm('确定要删除此评论吗？')">
+                                <button type="submit" class="btn-delete-comment"><i class="fas fa-trash-alt"></i></button>
+                            </form>
+                            {% endif %}
+                        </div>
+                        <div class="comment-body">{{ comment.content }}</div>
+                        {% if current_user %}
+                        <div class="comment-actions">
+                            <button class="reply-btn" onclick="showReplyForm({{ comment.id }}, '{{ comment.commenter.nickname or comment.commenter.username }}')">
+                                <i class="fas fa-reply"></i> 回复
+                            </button>
+                        </div>
+                        <div class="reply-form-wrapper" id="reply-form-{{ comment.id }}" style="display:none">
+                            <form action="{{ url_for('add_comment', post_id=post.id) }}" method="post">
+                                <input type="hidden" name="parent_id" value="{{ comment.id }}">
+                                <textarea name="content" placeholder="回复 {{ comment.commenter.nickname or comment.commenter.username }}..." rows="2" required></textarea>
+                                <button type="submit" class="btn btn-sm btn-primary">回复</button>
+                                <button type="button" class="btn btn-sm btn-outline" onclick="hideReplyForm({{ comment.id }})">取消</button>
+                            </form>
+                        </div>
+                        {% endif %}
+
+                        {% if comment.id in comment_replies %}
+                        {% for reply in comment_replies[comment.id] %}
+                        <div class="reply-item">
+                            <div class="comment-header">
+                                <div class="comment-author">
+                                    {% if reply.commenter.avatar %}
+                                    <img src="{{ url_for('static', filename='uploads/' + reply.commenter.avatar) }}" alt="" class="avatar-small">
+                                    {% else %}
+                                    <div class="avatar-placeholder-small">{{ (reply.commenter.nickname or reply.commenter.username)[0] }}</div>
+                                    {% endif %}
+                                    <span class="comment-name">{{ reply.commenter.nickname or reply.commenter.username }}</span>
+                                    <span class="comment-time">{{ reply.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+                                </div>
+                                {% if current_user and current_user.id == reply.user_id %}
+                                <form action="{{ url_for('delete_comment', comment_id=reply.id) }}" method="post" onsubmit="return confirm('确定要删除此评论吗？')">
+                                    <button type="submit" class="btn-delete-comment"><i class="fas fa-trash-alt"></i></button>
+                                </form>
+                                {% endif %}
+                            </div>
+                            <div class="comment-body">{{ reply.content }}</div>
+                        </div>
+                        {% endfor %}
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+
+                    {% if not comments %}
+                    <div class="empty-comments">
+                        <i class="fas fa-comment-slash"></i>
+                        <p>暂无评论，快来抢沙发吧！</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </section>
+        </div>
+
+        <aside class="detail-sidebar">
+            <div class="sidebar-card">
+                <h3>作者信息</h3>
+                <div class="author-card">
+                    {% if post.author.avatar %}
+                    <img src="{{ url_for('static', filename='uploads/' + post.author.avatar) }}" alt="" class="avatar-medium">
+                    {% else %}
+                    <div class="avatar-placeholder-medium">{{ (post.author.nickname or post.author.username)[0] }}</div>
+                    {% endif %}
+                    <h4>{{ post.author.nickname or post.author.username }}</h4>
+                    {% if post.author.bio %}
+                    <p class="author-bio">{{ post.author.bio }}</p>
+                    {% endif %}
+                    <p class="author-stats">发布了 {{ post.author.posts.count() }} 条方言内容</p>
+                </div>
+            </div>
+
+            <div class="sidebar-card">
+                <h3>所属方言区</h3>
+                {% if post.region_info %}
+                <a href="{{ url_for('region_detail', region_id=post.region_info.id) }}" class="region-link-card">
+                    <i class="fas fa-map-pin"></i>
+                    <div>
+                        <strong>{{ post.region_info.name }}</strong>
+                        <p>{{ post.region_info.description[:40] }}...</p>
+                    </div>
+                </a>
+                {% else %}
+                <p>未分类</p>
+                {% endif %}
+            </div>
+        </aside>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function showReplyForm(commentId, username) {
+    document.getElementById('reply-form-' + commentId).style.display = 'block';
+}
+function hideReplyForm(commentId) {
+    document.getElementById('reply-form-' + commentId).style.display = 'none';
+}
+</script>
+{% endblock %}

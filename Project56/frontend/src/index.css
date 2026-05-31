@@ -1,0 +1,19 @@
+﻿@import "tailwindcss";
+
+:root {
+  --color-primary: #C41A1A;
+  --color-primary-dark: #9A1515;
+  --color-secondary: #1A3A5C;
+  --color-accent: #D4A843;
+  --color-bg: #FAF7F2;
+  --color-card: #FFFFFF;
+  --color-text: #2D2D2D;
+  --color-text-light: #6B6B6B;
+  --color-border: #E8E0D5;
+}
+
+body {
+  font-family: "Noto Serif SC", "Source Han Serif SC", Georgia, serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+}

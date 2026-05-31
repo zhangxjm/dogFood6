@@ -1,0 +1,40 @@
+package com.aerospace.groundstation.config;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+
+@Configuration
+public class WebConfig implements WebMvcConfigurer {
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/api/**")
+                .allowedOrigins("http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:3001", "http://127.0.0.1:3001")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedHeaders("*")
+                .allowCredentials(true)
+                .maxAge(3600);
+    }
+
+    @Override
+    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+        StringHttpMessageConverter stringConverter = new StringHttpMessageConverter(StandardCharsets.UTF_8);
+        converters.add(0, stringConverter);
+        converters.stream()
+                .filter(c -> c instanceof MappingJackson2HttpMessageConverter)
+                .forEach(c -> ((MappingJackson2HttpMessageConverter) c).setDefaultCharset(StandardCharsets.UTF_8));
+    }
+
+    @Bean
+    public StringHttpMessageConverter stringHttpMessageConverter() {
+        return new StringHttpMessageConverter(StandardCharsets.UTF_8);
+    }
+}

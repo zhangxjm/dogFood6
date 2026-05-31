@@ -1,0 +1,213 @@
+{{template "header" .}}
+<div class="page-header">
+    <h2>出苗数量管理</h2>
+    <button class="btn btn-primary" onclick="openOutputModal()">+ 新增出苗</button>
+</div>
+
+<div class="filter-bar">
+    <select id="filter-batch" onchange="loadOutputs()">
+        <option value="">全部批次</option>
+    </select>
+</div>
+
+<table class="data-table" id="outputs-table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>批次号</th>
+            <th>品类</th>
+            <th>出苗日期</th>
+            <th>数量</th>
+            <th>质量等级</th>
+            <th>操作员</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<div class="summary-bar">
+    <strong>出苗总计：</strong><span id="total-output">0</span> 株
+</div>
+
+<div class="modal" id="output-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="output-modal-title">新增出苗</h3>
+            <span class="close" onclick="closeModal('output-modal')">&times;</span>
+        </div>
+        <div class="modal-body">
+            <form id="output-form">
+                <input type="hidden" id="output-id">
+                <div class="form-group">
+                    <label>批次 *</label>
+                    <select id="output-batch-id" required></select>
+                </div>
+                <div class="form-group">
+                    <label>出苗日期 *</label>
+                    <input type="date" id="output-output-date" required>
+                </div>
+                <div class="form-group">
+                    <label>数量 *</label>
+                    <input type="number" id="output-quantity" required min="1">
+                </div>
+                <div class="form-group">
+                    <label>质量等级</label>
+                    <select id="output-quality">
+                        <option value="一级">一级</option>
+                        <option value="二级">二级</option>
+                        <option value="三级">三级</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>操作员</label>
+                    <input type="text" id="output-operator">
+                </div>
+                <div class="form-group">
+                    <label>备注</label>
+                    <textarea id="output-remarks" rows="3"></textarea>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal('output-modal')">取消</button>
+            <button class="btn btn-primary" onclick="saveOutput()">保存</button>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadBatchesForFilter();
+    loadBatchesForSelect();
+    loadOutputs();
+});
+
+function loadBatchesForFilter() {
+    fetch('/api/batches')
+        .then(r => r.json())
+        .then(data => {
+            const select = document.getElementById('filter-batch');
+            data.forEach(b => {
+                const option = document.createElement('option');
+                option.value = b.id;
+                option.textContent = `${b.batch_no} - ${b.category.name}`;
+                select.appendChild(option);
+            });
+        });
+}
+
+function loadBatchesForSelect() {
+    fetch('/api/batches')
+        .then(r => r.json())
+        .then(data => {
+            const select = document.getElementById('output-batch-id');
+            select.innerHTML = '';
+            data.forEach(b => {
+                const option = document.createElement('option');
+                option.value = b.id;
+                option.textContent = `${b.batch_no} - ${b.category.name}`;
+                select.appendChild(option);
+            });
+        });
+}
+
+function loadOutputs() {
+    const batchId = document.getElementById('filter-batch').value;
+
+    fetch('/api/outputs')
+        .then(r => r.json())
+        .then(data => {
+            let filtered = data;
+            if (batchId) {
+                filtered = filtered.filter(o => o.batch_id == batchId);
+            }
+
+            const total = filtered.reduce((sum, o) => sum + o.quantity, 0);
+            document.getElementById('total-output').textContent = total.toLocaleString();
+
+            const tbody = document.querySelector('#outputs-table tbody');
+            tbody.innerHTML = filtered.map(o => `
+                <tr>
+                    <td>${o.id}</td>
+                    <td>${o.batch.batch_no}</td>
+                    <td>${o.batch.category.name}</td>
+                    <td>${formatDate(o.output_date)}</td>
+                    <td>${o.quantity.toLocaleString()}</td>
+                    <td><span class="quality-badge quality-${o.quality}">${o.quality || '-'}</span></td>
+                    <td>${o.operator || '-'}</td>
+                    <td>
+                        <button class="btn btn-sm btn-edit" onclick="editOutput(${o.id})">编辑</button>
+                        <button class="btn btn-sm btn-delete" onclick="deleteOutput(${o.id})">删除</button>
+                    </td>
+                </tr>
+            `).join('');
+        });
+}
+
+function openOutputModal() {
+    document.getElementById('output-modal-title').textContent = '新增出苗';
+    document.getElementById('output-form').reset();
+    document.getElementById('output-id').value = '';
+    document.getElementById('output-output-date').value = new Date().toISOString().split('T')[0];
+    document.getElementById('output-modal').style.display = 'block';
+}
+
+function editOutput(id) {
+    fetch(`/api/outputs/${id}`)
+        .then(r => r.json())
+        .then(o => {
+            document.getElementById('output-modal-title').textContent = '编辑出苗';
+            document.getElementById('output-id').value = o.id;
+            document.getElementById('output-batch-id').value = o.batch_id;
+            document.getElementById('output-output-date').value = formatDateInput(o.output_date);
+            document.getElementById('output-quantity').value = o.quantity;
+            document.getElementById('output-quality').value = o.quality || '一级';
+            document.getElementById('output-operator').value = o.operator || '';
+            document.getElementById('output-remarks').value = o.remarks || '';
+            document.getElementById('output-modal').style.display = 'block';
+        });
+}
+
+function saveOutput() {
+    const id = document.getElementById('output-id').value;
+    const data = {
+        batch_id: parseInt(document.getElementById('output-batch-id').value),
+        output_date: document.getElementById('output-output-date').value,
+        quantity: parseInt(document.getElementById('output-quantity').value),
+        quality: document.getElementById('output-quality').value,
+        operator: document.getElementById('output-operator').value,
+        remarks: document.getElementById('output-remarks').value
+    };
+
+    const method = id ? 'PUT' : 'POST';
+    const url = id ? `/api/outputs/${id}` : '/api/outputs';
+
+    fetch(url, {
+        method: method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    }).then(r => {
+        if (r.ok) {
+            closeModal('output-modal');
+            loadOutputs();
+        } else {
+            alert('保存失败');
+        }
+    });
+}
+
+function deleteOutput(id) {
+    if (confirm('确定要删除这条出苗记录吗？')) {
+        fetch(`/api/outputs/${id}`, { method: 'DELETE' })
+            .then(r => {
+                if (r.ok) {
+                    loadOutputs();
+                } else {
+                    alert('删除失败');
+                }
+            });
+    }
+}
+</script>
+{{template "footer" .}}

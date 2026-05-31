@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}播放记录 - 校园广播站管理系统{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>🎵 播放记录</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>节目名称</th>
+                <th>播放日期</th>
+                <th>开始时间</th>
+                <th>结束时间</th>
+                <th>主持人</th>
+                <th>听众人数</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in records %}
+            <tr>
+                <td>{{ record.program.name }}</td>
+                <td>{{ record.play_date }}</td>
+                <td>{{ record.start_time }}</td>
+                <td>{{ record.end_time }}</td>
+                <td>{{ record.host }}</td>
+                <td>{{ record.listeners_count }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" style="text-align: center; color: #999; padding: 30px;">暂无播放记录</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

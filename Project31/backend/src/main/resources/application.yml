@@ -1,0 +1,45 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: digital-twin-service
+  datasource:
+    url: jdbc:sqlite:../data/digital_twin.db
+    driver-class-name: org.sqlite.JDBC
+    username: admin
+    password: admin123
+  jpa:
+    database-platform: org.hibernate.community.dialect.SQLiteDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+rocketmq:
+  name-server: 127.0.0.1:9876
+  producer:
+    group: digital-twin-producer
+    send-message-timeout: 3000
+    retry-times-when-send-failed: 2
+  consumer:
+    group: digital-twin-consumer
+
+digitaltwin:
+  mq:
+    topic:
+      device-status: DEVICE_STATUS_TOPIC
+      device-command: DEVICE_COMMAND_TOPIC
+      device-alarm: DEVICE_ALARM_TOPIC
+
+logging:
+  level:
+    root: INFO
+    com.digitaltwin: DEBUG
+    org.hibernate.SQL: WARN

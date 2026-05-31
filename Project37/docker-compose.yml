@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: doc-archive-backend
+    restart: always
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend/data:/app/data
+    environment:
+      - TZ=Asia/Shanghai
+    networks:
+      - doc-archive-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: doc-archive-frontend
+    restart: always
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    environment:
+      - TZ=Asia/Shanghai
+    networks:
+      - doc-archive-network
+
+networks:
+  doc-archive-network:
+    driver: bridge
+
+volumes:
+  backend-data:

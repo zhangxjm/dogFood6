@@ -1,0 +1,80 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;500;600;700&display=swap');
+
+:root {
+  --foreground-rgb: 26, 26, 46;
+  --background-start-rgb: 245, 240, 230;
+  --background-end-rgb: 255, 255, 255;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+  font-family: 'Noto Sans SC', system-ui, sans-serif;
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-heritage-red hover:bg-red-700 text-white font-medium py-2 px-6 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg;
+  }
+
+  .btn-secondary {
+    @apply bg-white hover:bg-gray-50 text-heritage-ink border border-heritage-gold font-medium py-2 px-6 rounded-lg transition-all duration-200;
+  }
+
+  .card {
+    @apply bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-heritage-gold focus:border-transparent outline-none transition-all;
+  }
+
+  .section-title {
+    @apply text-3xl font-bold text-heritage-ink mb-6 font-serif;
+  }
+
+  .chinese-border {
+    @apply border-2 border-heritage-gold/30 relative;
+  }
+
+  .chinese-border::before {
+    content: '';
+    @apply absolute -top-1 -left-1 w-4 h-4 border-t-2 border-l-2 border-heritage-gold;
+  }
+
+  .chinese-border::after {
+    content: '';
+    @apply absolute -bottom-1 -right-1 w-4 h-4 border-b-2 border-r-2 border-heritage-gold;
+  }
+}
+
+.live-indicator {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

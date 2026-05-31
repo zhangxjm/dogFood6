@@ -1,0 +1,127 @@
+{{define "routes.html"}}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.Title}} - 短途货运调度系统</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    {{template "nav" .}}
+    <main class="content">
+        <div class="page-header">
+            <h1>运输路线</h1>
+            <button class="btn btn-primary" onclick="toggleForm('routeForm')">新增路线</button>
+        </div>
+
+        {{if .Error}}
+        <div class="alert alert-error">{{.Error}}</div>
+        {{end}}
+
+        <div id="routeForm" class="form-card" style="display:none;">
+            <h3>新增运输路线</h3>
+            <form action="/routes" method="POST">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>路线名称</label>
+                        <input type="text" name="name" required placeholder="例：朝阳-海淀线">
+                    </div>
+                    <div class="form-group">
+                        <label>起点</label>
+                        <input type="text" name="start_point" required placeholder="例：朝阳区望京物流园">
+                    </div>
+                    <div class="form-group">
+                        <label>终点</label>
+                        <input type="text" name="end_point" required placeholder="例：海淀区中关村配送中心">
+                    </div>
+                    <div class="form-group">
+                        <label>距离（公里）</label>
+                        <input type="number" name="distance" step="0.1" min="0.1" required placeholder="例：25.0">
+                    </div>
+                    <div class="form-group">
+                        <label>预计耗时（分钟）</label>
+                        <input type="number" name="estimated_time" min="1" required placeholder="例：60">
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">添加路线</button>
+                    <button type="button" class="btn btn-secondary" onclick="toggleForm('routeForm')">取消</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="section">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>路线名称</th>
+                        <th>起点</th>
+                        <th>终点</th>
+                        <th>距离(公里)</th>
+                        <th>预计耗时(分钟)</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{range .Routes}}
+                    <tr>
+                        <td>{{.ID}}</td>
+                        <td><strong>{{.Name}}</strong></td>
+                        <td>{{.StartPoint}}</td>
+                        <td>{{.EndPoint}}</td>
+                        <td>{{.Distance}}</td>
+                        <td>{{.EstimatedTime}}</td>
+                        <td class="action-cell">
+                            <button class="btn btn-sm btn-info" onclick="showEditRoute({{.ID}}, '{{.Name}}', '{{.StartPoint}}', '{{.EndPoint}}', {{.Distance}}, {{.EstimatedTime}})">编辑</button>
+                            <form action="/routes/{{.ID}}/delete" method="POST" style="display:inline" onsubmit="return confirm('确认删除该路线？')">
+                                <button type="submit" class="btn btn-sm btn-danger">删除</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {{else}}
+                    <tr><td colspan="7" class="empty-text">暂无路线数据</td></tr>
+                    {{end}}
+                </tbody>
+            </table>
+        </div>
+
+        <div id="editRouteModal" class="modal" style="display:none;">
+            <div class="modal-content">
+                <h3>编辑路线</h3>
+                <form id="editRouteForm" action="" method="POST">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>路线名称</label>
+                            <input type="text" name="name" id="edit_route_name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>起点</label>
+                            <input type="text" name="start_point" id="edit_start_point" required>
+                        </div>
+                        <div class="form-group">
+                            <label>终点</label>
+                            <input type="text" name="end_point" id="edit_end_point" required>
+                        </div>
+                        <div class="form-group">
+                            <label>距离（公里）</label>
+                            <input type="number" name="distance" id="edit_distance" step="0.1" min="0.1" required>
+                        </div>
+                        <div class="form-group">
+                            <label>预计耗时（分钟）</label>
+                            <input type="number" name="estimated_time" id="edit_estimated_time" min="1" required>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">保存修改</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('editRouteModal')">取消</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
+{{end}}

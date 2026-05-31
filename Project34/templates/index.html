@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}首页 - 校园广播站管理系统{% endblock %}
+
+{% block content %}
+<div class="grid">
+    <div class="stat-card">
+        <div class="number">{{ programs_count }}</div>
+        <div class="label">播出中节目</div>
+    </div>
+    <div class="stat-card">
+        <div class="number">{{ schedules_count }}</div>
+        <div class="label">本周排班</div>
+    </div>
+    <div class="stat-card">
+        <div class="number">{{ records_count }}</div>
+        <div class="label">播放记录</div>
+    </div>
+    <div class="stat-card">
+        <div class="number">{{ pending_submissions }}</div>
+        <div class="label">待审核投稿</div>
+    </div>
+</div>
+
+<div class="card">
+    <h2>📅 今日排班</h2>
+    {% if today_schedule %}
+    <table>
+        <thead>
+            <tr>
+                <th>节目名称</th>
+                <th>开始时间</th>
+                <th>结束时间</th>
+                <th>主持人</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for schedule in today_schedule %}
+            <tr>
+                <td>{{ schedule.program.name }}</td>
+                <td>{{ schedule.start_time }}</td>
+                <td>{{ schedule.end_time }}</td>
+                <td>{{ schedule.program.host }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="color: #999; text-align: center; padding: 20px;">今日暂无排班</p>
+    {% endif %}
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px;">
+    <div class="card">
+        <h2>🎵 最近播放记录</h2>
+        {% if recent_records %}
+        <table>
+            <thead>
+                <tr>
+                    <th>节目</th>
+                    <th>日期</th>
+                    <th>主持人</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in recent_records %}
+                <tr>
+                    <td>{{ record.program.name }}</td>
+                    <td>{{ record.play_date }}</td>
+                    <td>{{ record.host }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p style="color: #999; text-align: center; padding: 20px;">暂无播放记录</p>
+        {% endif %}
+        <div style="margin-top: 15px;">
+            <a href="{% url 'play_record_list' %}" class="btn btn-secondary">查看全部</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>📝 最新投稿</h2>
+        {% if recent_submissions %}
+        <table>
+            <thead>
+                <tr>
+                    <th>标题</th>
+                    <th>投稿人</th>
+                    <th>状态</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for submission in recent_submissions %}
+                <tr>
+                    <td>{{ submission.title }}</td>
+                    <td>{{ submission.submitter_name }}</td>
+                    <td>
+                        <span class="status-badge status-{{ submission.status }}">
+                            {{ submission.get_status_display }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p style="color: #999; text-align: center; padding: 20px;">暂无投稿</p>
+        {% endif %}
+        <div style="margin-top: 15px;">
+            <a href="{% url 'submission_new' %}" class="btn">我要投稿</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

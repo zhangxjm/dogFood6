@@ -1,0 +1,282 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding-bottom: 160rpx;
+}
+
+.section {
+  margin: $spacing-md $page-padding 0;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+}
+
+.serviceRow {
+  display: flex;
+  flex-direction: row;
+}
+
+.serviceImage {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: $radius-md;
+  flex-shrink: 0;
+}
+
+.serviceInfo {
+  flex: 1;
+  margin-left: $spacing-md;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.serviceName {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  @include text-ellipsis;
+}
+
+.serviceMeta {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.serviceCategory {
+  font-size: $font-size-xs;
+  color: $color-tag-text;
+  background: $color-tag-bg;
+  border-radius: $radius-xs;
+  padding: 4rpx 12rpx;
+  margin-right: $spacing-sm;
+}
+
+.serviceDuration {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.servicePrice {
+  font-size: $font-size-xl;
+  color: $color-price;
+  font-weight: $font-weight-bold;
+}
+
+.priceSymbol {
+  font-size: $font-size-sm;
+  color: $color-price;
+}
+
+.sectionTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+}
+
+.dateScroll {
+  white-space: nowrap;
+}
+
+.dateList {
+  display: flex;
+  flex-direction: row;
+}
+
+.dateItem {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 110rpx;
+  padding: 14rpx 0;
+  border-radius: $radius-md;
+  background: $color-bg-page;
+  margin-right: $spacing-sm;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.9;
+  }
+}
+
+.dateItemActive {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+}
+
+.dateWeekday {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-bottom: 4rpx;
+}
+
+.dateDay {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.dateWeekdayActive {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.dateDayActive {
+  color: $color-text-white;
+}
+
+.timeGrid {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin: 0 -6rpx;
+}
+
+.timeItem {
+  width: calc(25% - 12rpx);
+  margin: 6rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16rpx 0;
+  border-radius: $radius-md;
+  background: $color-bg-page;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.9;
+  }
+}
+
+.timeItemActive {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+}
+
+.timeText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  white-space: nowrap;
+}
+
+.timeTextActive {
+  color: $color-text-white;
+  font-weight: $font-weight-medium;
+}
+
+.noteInput {
+  width: 100%;
+  background: $color-bg-page;
+  border-radius: $radius-md;
+  padding: $spacing-md;
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  min-height: 100rpx;
+}
+
+.summaryCard {
+  margin: $spacing-md $page-padding 0;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+}
+
+.summaryRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-sm;
+
+  &:last-child {
+    margin-bottom: 0;
+    padding-top: $spacing-sm;
+    border-top: 1rpx solid $color-divider;
+  }
+}
+
+.summaryLabel {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.summaryValue {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.summaryTotal {
+  font-size: $font-size-xl;
+  color: $color-price;
+  font-weight: $font-weight-bold;
+}
+
+.bottomBar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: $color-bg-card;
+  padding: $spacing-md $page-padding;
+  padding-bottom: calc(#{$spacing-md} + env(safe-area-inset-bottom));
+  box-shadow: $shadow-float;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.priceInfo {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+}
+
+.priceLabel {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  margin-right: 8rpx;
+}
+
+.priceSymbol {
+  font-size: $font-size-sm;
+  color: $color-price;
+  font-weight: $font-weight-semibold;
+}
+
+.priceValue {
+  font-size: $font-size-xxl;
+  color: $color-price;
+  font-weight: $font-weight-bold;
+}
+
+.submitBtn {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  border-radius: $radius-button;
+  padding: 0 48rpx;
+  height: $button-height-lg;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}
+
+.submitBtnDisabled {
+  opacity: 0.5;
+}
+
+.submitBtnText {
+  font-size: $font-size-lg;
+  color: $color-text-white;
+  font-weight: $font-weight-medium;
+  white-space: nowrap;
+}

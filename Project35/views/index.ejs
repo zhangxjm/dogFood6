@@ -1,0 +1,78 @@
+<%- include('partials/header') %>
+
+<div class="hero-section">
+    <div class="container text-center">
+        <h1 class="display-4 mb-4">社区便民维修上门预约系统</h1>
+        <p class="lead mb-4">专业的水电、家电维修服务，随叫随到</p>
+        <div class="d-flex justify-content-center gap-4 mb-4">
+            <div class="bg-white bg-opacity-25 rounded-3 px-4 py-3">
+                <h3 class="mb-0"><%= pendingCount %></h3>
+                <small>待处理订单</small>
+            </div>
+            <div class="bg-white bg-opacity-25 rounded-3 px-4 py-3">
+                <h3 class="mb-0"><%= completedCount %></h3>
+                <small>已完成订单</small>
+            </div>
+        </div>
+        <a href="/orders/new" class="btn btn-light btn-lg">
+            <i class="fa fa-calendar-check-o me-2"></i>立即预约
+        </a>
+    </div>
+</div>
+
+<div class="container">
+    <% for (const category in categories) { %>
+        <div class="mb-5">
+            <h2 class="mb-4">
+                <i class="fa 
+                    <%= category === '水电维修' ? 'fa-plug text-warning' : 'fa-television text-info'
+                %> me-2"></i><%= category %>
+            </h2>
+            <div class="row g-4">
+                <% categories[category].forEach(function(service) { %>
+                    <div class="col-md-3">
+                        <div class="card service-card h-100" onclick="window.location.href='/orders/new?service_id=<%= service.id %>'">
+                            <div class="card-body text-center">
+                                <div class="display-4 mb-3 text-primary">
+                                    <i class="fa <%= service.icon || 'fa-wrench' %>"></i>
+                                </div>
+                                <h5 class="card-title"><%= service.name %></h5>
+                                <p class="card-text text-muted small"><%= service.description %></p>
+                                <p class="text-primary fw-bold">起步价：¥<%= service.base_price %></p>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+        </div>
+    <% } %>
+
+    <div class="row mt-5">
+        <div class="col-md-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center py-5">
+                    <h3 class="mb-3">为什么选择我们？</h3>
+                    <div class="row mt-4">
+                        <div class="col-md-4">
+                            <div class="h1 text-primary mb-2"><i class="fa fa-user-circle-o"></i></div>
+                            <h5>专业技师</h5>
+                            <p class="text-muted">持证上岗，经验丰富</p>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="h1 text-success mb-2"><i class="fa fa-shield"></i></div>
+                            <h5>售后保障</h5>
+                            <p class="text-muted">维修质量有保障</p>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="h1 text-warning mb-2"><i class="fa fa-clock-o"></i></div>
+                            <h5>快速响应</h5>
+                            <p class="text-muted">预约后快速上门</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>

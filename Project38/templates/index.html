@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% block title %}方言文化分享平台 - 传承乡音 守护文化{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-content">
+        <h1><i class="fas fa-language"></i> 方言文化分享平台</h1>
+        <p>记录乡音乡愁，传承方言文化，让每一句方言都被听见</p>
+        <form class="search-box" action="{{ url_for('search') }}" method="get">
+            <input type="text" name="q" placeholder="搜索方言、地域、关键词..." value="{{ keyword or '' }}">
+            <button type="submit"><i class="fas fa-search"></i> 搜索</button>
+        </form>
+    </div>
+</section>
+
+<section class="regions-section" id="regions">
+    <div class="container">
+        <h2 class="section-title"><i class="fas fa-map-marked-alt"></i> 方言分区</h2>
+        <div class="regions-grid">
+            {% for region in all_regions %}
+            <a href="{{ url_for('region_detail', region_id=region.id) }}" class="region-card">
+                <div class="region-icon">
+                    <i class="fas fa-map-pin"></i>
+                </div>
+                <div class="region-info">
+                    <h3>{{ region.name }}</h3>
+                    <p>{{ region.description[:30] }}...</p>
+                    <span class="post-count">{{ region.posts.count() }} 条内容</span>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="posts-section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title"><i class="fas fa-microphone-alt"></i> 方言分享</h2>
+            <div class="sort-tabs">
+                <a href="{{ url_for('index', sort='latest', region_id=current_region, keyword=keyword) }}" class="sort-tab {% if sort == 'latest' %}active{% endif %}">最新</a>
+                <a href="{{ url_for('index', sort='hot', region_id=current_region, keyword=keyword) }}" class="sort-tab {% if sort == 'hot' %}active{% endif %}">最热</a>
+                <a href="{{ url_for('index', sort='views', region_id=current_region, keyword=keyword) }}" class="sort-tab {% if sort == 'views' %}active{% endif %}">最多浏览</a>
+            </div>
+        </div>
+
+        {% if current_region %}
+        <div class="filter-tag">
+            <span>当前筛选：{{ all_regions|selectattr('id', 'equalto', current_region)|list|first|default('')|attr('name')|default('') }}</span>
+            <a href="{{ url_for('index', sort=sort) }}" class="remove-filter"><i class="fas fa-times"></i> 清除</a>
+        </div>
+        {% endif %}
+
+        {% if posts %}
+        <div class="posts-grid">
+            {% for post in posts %}
+            <div class="post-card">
+                <div class="post-region-tag">
+                    <i class="fas fa-map-marker-alt"></i> {{ post.region_info.name if post.region_info else '未分类' }}
+                </div>
+                <div class="post-card-body">
+                    <h3 class="post-title">
+                        <a href="{{ url_for('post_detail', post_id=post.id) }}">{{ post.title }}</a>
+                    </h3>
+                    <p class="post-excerpt">{{ post.description[:80] }}{% if post.description|length > 80 %}...{% endif %}</p>
+                    {% if post.dialect_text %}
+                    <div class="post-dialect">
+                        <i class="fas fa-quote-left"></i> {{ post.dialect_text[:50] }}{% if post.dialect_text|length > 50 %}...{% endif %}
+                    </div>
+                    {% endif %}
+                    {% if post.audio_path %}
+                    <div class="post-audio-badge">
+                        <i class="fas fa-volume-up"></i> 含音频
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="post-card-footer">
+                    <div class="post-author">
+                        {% if post.author.avatar %}
+                        <img src="{{ url_for('static', filename='uploads/' + post.author.avatar) }}" alt="" class="avatar-small">
+                        {% else %}
+                        <div class="avatar-placeholder-small">{{ (post.author.nickname or post.author.username)[0] }}</div>
+                        {% endif %}
+                        <span>{{ post.author.nickname or post.author.username }}</span>
+                    </div>
+                    <div class="post-stats">
+                        <span><i class="fas fa-heart"></i> {{ post.likes_count or 0 }}</span>
+                        <span><i class="fas fa-comment"></i> {{ post.comments.count() }}</span>
+                        <span><i class="fas fa-eye"></i> {{ post.views_count or 0 }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if pagination.pages > 1 %}
+        <div class="pagination">
+            {% if pagination.has_prev %}
+            <a href="{{ url_for('index', page=pagination.prev_num, sort=sort, region_id=current_region, keyword=keyword) }}" class="page-btn">
+                <i class="fas fa-chevron-left"></i> 上一页
+            </a>
+            {% endif %}
+            {% for p in pagination.iter_pages() %}
+                {% if p %}
+                <a href="{{ url_for('index', page=p, sort=sort, region_id=current_region, keyword=keyword) }}" class="page-btn {% if p == pagination.page %}active{% endif %}">{{ p }}</a>
+                {% else %}
+                <span class="page-ellipsis">...</span>
+                {% endif %}
+            {% endfor %}
+            {% if pagination.has_next %}
+            <a href="{{ url_for('index', page=pagination.next_num, sort=sort, region_id=current_region, keyword=keyword) }}" class="page-btn">
+                下一页 <i class="fas fa-chevron-right"></i>
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-microphone-slash"></i>
+            <p>暂无方言内容，快来发布第一条吧！</p>
+            <a href="{{ url_for('publish') }}" class="btn btn-primary">发布方言</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+{% if hot_posts %}
+<section class="hot-section">
+    <div class="container">
+        <h2 class="section-title"><i class="fas fa-fire"></i> 热门方言</h2>
+        <div class="hot-list">
+            {% for post in hot_posts %}
+            <a href="{{ url_for('post_detail', post_id=post.id) }}" class="hot-item">
+                <span class="hot-rank">{{ loop.index }}</span>
+                <span class="hot-title">{{ post.title }}</span>
+                <span class="hot-likes"><i class="fas fa-heart"></i> {{ post.likes_count or 0 }}</span>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endblock %}

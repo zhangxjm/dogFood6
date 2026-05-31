@@ -1,0 +1,97 @@
+spring:
+  application:
+    name: ground-station
+
+  datasource:
+    url: jdbc:sqlite:./data/ground_station_v7.db
+    driver-class-name: org.sqlite.JDBC
+    username: admin
+    password: admin123
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      idle-timeout: 300000
+      connection-timeout: 20000
+
+  jpa:
+    database-platform: org.hibernate.community.dialect.SQLiteDialect
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          batch_size: 100
+        order_inserts: true
+        order_updates: true
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.ByteArraySerializer
+      acks: all
+      retries: 3
+      batch-size: 16384
+      linger-ms: 100
+      compression-type: snappy
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
+      group-id: ground-station-group
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      max-poll-records: 500
+      fetch-min-bytes: 10240
+      fetch-max-wait-ms: 500
+    listener:
+      ack-mode: manual_immediate
+      concurrency: 4
+      poll-timeout: 3000
+
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+      data-locations:
+      encoding: UTF-8
+
+server:
+  port: 8080
+  servlet:
+    context-path: /
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+  compression:
+    enabled: true
+    mime-types: application/json,application/xml,text/html,text/xml,text/plain
+
+app:
+  kafka:
+    topic: satellite-data
+    retry-topic: satellite-data-retry
+    dead-letter-topic: satellite-data-dlt
+  batch:
+    size: 200
+    timeout-ms: 5000
+  simulator:
+    enabled: true
+    interval-ms: 100
+    satellites:
+      - SAT-001
+      - SAT-002
+      - SAT-003
+      - SAT-004
+      - SAT-005
+
+logging:
+  level:
+    root: INFO
+    com.aerospace.groundstation: DEBUG
+    org.springframework.kafka: INFO
+    org.hibernate.SQL: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"

@@ -1,0 +1,141 @@
+{{template "header" .}}
+<div class="page-header">
+    <h2>种苗品类管理</h2>
+    <button class="btn btn-primary" onclick="openCategoryModal()">+ 新增品类</button>
+</div>
+
+<table class="data-table" id="categories-table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>品类名称</th>
+            <th>学名</th>
+            <th>描述</th>
+            <th>计量单位</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<div class="modal" id="category-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modal-title">新增品类</h3>
+            <span class="close" onclick="closeModal('category-modal')">&times;</span>
+        </div>
+        <div class="modal-body">
+            <form id="category-form">
+                <input type="hidden" id="category-id">
+                <div class="form-group">
+                    <label>品类名称 *</label>
+                    <input type="text" id="category-name" required>
+                </div>
+                <div class="form-group">
+                    <label>学名</label>
+                    <input type="text" id="category-scientific-name">
+                </div>
+                <div class="form-group">
+                    <label>描述</label>
+                    <textarea id="category-description" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>计量单位 *</label>
+                    <input type="text" id="category-unit" required>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal('category-modal')">取消</button>
+            <button class="btn btn-primary" onclick="saveCategory()">保存</button>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadCategories();
+});
+
+function loadCategories() {
+    fetch('/api/categories')
+        .then(r => r.json())
+        .then(data => {
+            const tbody = document.querySelector('#categories-table tbody');
+            tbody.innerHTML = data.map(c => `
+                <tr>
+                    <td>${c.id}</td>
+                    <td>${c.name}</td>
+                    <td><em>${c.scientific_name || '-'}</em></td>
+                    <td>${c.description || '-'}</td>
+                    <td>${c.unit}</td>
+                    <td>
+                        <button class="btn btn-sm btn-edit" onclick="editCategory(${c.id})">编辑</button>
+                        <button class="btn btn-sm btn-delete" onclick="deleteCategory(${c.id})">删除</button>
+                    </td>
+                </tr>
+            `).join('');
+        });
+}
+
+function openCategoryModal() {
+    document.getElementById('modal-title').textContent = '新增品类';
+    document.getElementById('category-form').reset();
+    document.getElementById('category-id').value = '';
+    document.getElementById('category-modal').style.display = 'block';
+}
+
+function editCategory(id) {
+    fetch(`/api/categories/${id}`)
+        .then(r => r.json())
+        .then(c => {
+            document.getElementById('modal-title').textContent = '编辑品类';
+            document.getElementById('category-id').value = c.id;
+            document.getElementById('category-name').value = c.name;
+            document.getElementById('category-scientific-name').value = c.scientific_name || '';
+            document.getElementById('category-description').value = c.description || '';
+            document.getElementById('category-unit').value = c.unit;
+            document.getElementById('category-modal').style.display = 'block';
+        });
+}
+
+function saveCategory() {
+    const id = document.getElementById('category-id').value;
+    const data = {
+        name: document.getElementById('category-name').value,
+        scientific_name: document.getElementById('category-scientific-name').value,
+        description: document.getElementById('category-description').value,
+        unit: document.getElementById('category-unit').value
+    };
+
+    const method = id ? 'PUT' : 'POST';
+    const url = id ? `/api/categories/${id}` : '/api/categories';
+
+    fetch(url, {
+        method: method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    }).then(r => {
+        if (r.ok) {
+            closeModal('category-modal');
+            loadCategories();
+        } else {
+            alert('保存失败');
+        }
+    });
+}
+
+function deleteCategory(id) {
+    if (confirm('确定要删除这个品类吗？')) {
+        fetch(`/api/categories/${id}`, { method: 'DELETE' })
+            .then(r => {
+                if (r.ok) {
+                    loadCategories();
+                } else {
+                    alert('删除失败，该品类可能已被使用');
+                }
+            });
+    }
+}
+</script>
+{{template "footer" .}}

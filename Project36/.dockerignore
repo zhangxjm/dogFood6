@@ -1,0 +1,47 @@
+# Go binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+nursery-management
+nursery-management.exe
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
+
+# Dependency directories
+vendor/
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Node modules
+node_modules/
+
+# Build artifacts
+dist/
+build/

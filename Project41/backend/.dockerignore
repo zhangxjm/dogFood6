@@ -1,0 +1,6 @@
+target/
+*.db
+.DS_Store
+*.log
+.git/
+.gitignore

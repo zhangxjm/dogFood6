@@ -1,0 +1,177 @@
+@forward 'element-plus/theme-chalk/src/common/var.scss' with (
+  $colors: (
+    'primary': (
+      'base': #165DFF,
+    ),
+    'warning': (
+      'base': #FF7D00,
+    ),
+    'danger': (
+      'base': #F53F3F,
+    ),
+    'success': (
+      'base': #00B42A,
+    )
+  ),
+  $--color-primary: #165DFF,
+  $--color-warning: #FF7D00,
+  $--color-danger: #F53F3F,
+  $--color-success: #00B42A
+);
+
+.el-button--primary {
+  --el-button-bg-color: #165DFF;
+  --el-button-border-color: #165DFF;
+  --el-button-hover-bg-color: #4C8EFF;
+  --el-button-hover-border-color: #4C8EFF;
+  --el-button-active-bg-color: #0E42D2;
+  --el-button-active-border-color: #0E42D2;
+}
+
+.el-button--warning {
+  --el-button-bg-color: #FF7D00;
+  --el-button-border-color: #FF7D00;
+  --el-button-hover-bg-color: #FFA647;
+  --el-button-hover-border-color: #FFA647;
+  --el-button-active-bg-color: #CC6400;
+  --el-button-active-border-color: #CC6400;
+}
+
+.el-button--danger {
+  --el-button-bg-color: #F53F3F;
+  --el-button-border-color: #F53F3F;
+  --el-button-hover-bg-color: #FF6148;
+  --el-button-hover-border-color: #FF6148;
+  --el-button-active-bg-color: #CB2634;
+  --el-button-active-border-color: #CB2634;
+}
+
+.el-button--success {
+  --el-button-bg-color: #00B42A;
+  --el-button-border-color: #00B42A;
+  --el-button-hover-bg-color: #47FF55;
+  --el-button-hover-border-color: #47FF55;
+  --el-button-active-bg-color: #009A2F;
+  --el-button-active-border-color: #009A2F;
+}
+
+.el-tag--primary {
+  --el-tag-bg-color: rgba(22, 93, 255, 0.1);
+  --el-tag-border-color: rgba(22, 93, 255, 0.2);
+  --el-tag-text-color: #165DFF;
+}
+
+.el-tag--warning {
+  --el-tag-bg-color: rgba(255, 125, 0, 0.1);
+  --el-tag-border-color: rgba(255, 125, 0, 0.2);
+  --el-tag-text-color: #FF7D00;
+}
+
+.el-tag--danger {
+  --el-tag-bg-color: rgba(245, 63, 63, 0.1);
+  --el-tag-border-color: rgba(245, 63, 63, 0.2);
+  --el-tag-text-color: #F53F3F;
+}
+
+.el-tag--success {
+  --el-tag-bg-color: rgba(0, 180, 42, 0.1);
+  --el-tag-border-color: rgba(0, 180, 42, 0.2);
+  --el-tag-text-color: #00B42A;
+}
+
+.el-progress-bar__inner {
+  background-color: #165DFF;
+}
+
+.el-progress--success .el-progress-bar__inner {
+  background-color: #00B42A;
+}
+
+.el-progress--warning .el-progress-bar__inner {
+  background-color: #FF7D00;
+}
+
+.el-progress--danger .el-progress-bar__inner {
+  background-color: #F53F3F;
+}
+
+.el-menu {
+  --el-menu-active-color: #165DFF;
+  --el-menu-hover-bg-color: rgba(22, 93, 255, 0.06);
+}
+
+.el-menu-item.is-active {
+  background-color: rgba(22, 93, 255, 0.1);
+}
+
+.el-sub-menu__title:hover,
+.el-menu-item:hover {
+  background-color: rgba(22, 93, 255, 0.06);
+}
+
+.el-table th {
+  background-color: #f8f9fa;
+  color: #1D2129;
+  font-weight: 600;
+}
+
+.el-pagination {
+  --el-pagination-hover-color: #165DFF;
+}
+
+.el-pagination.is-background .el-pager li:not(.disabled).active {
+  background-color: #165DFF;
+}
+
+.el-input__wrapper.is-focus {
+  box-shadow: 0 0 0 1px #165DFF inset;
+}
+
+.el-select-dropdown__item.selected {
+  color: #165DFF;
+}
+
+.el-date-table td.current:not(.disabled) span {
+  background-color: #165DFF;
+}
+
+.el-checkbox__input.is-checked .el-checkbox__inner,
+.el-checkbox__input.is-indeterminate .el-checkbox__inner {
+  background-color: #165DFF;
+  border-color: #165DFF;
+}
+
+.el-radio__input.is-checked .el-radio__inner {
+  border-color: #165DFF;
+  background: #165DFF;
+}
+
+.el-switch.is-checked .el-switch__core {
+  background-color: #165DFF;
+  border-color: #165DFF;
+}
+
+.el-drawer .el-drawer__header {
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--el-border-color-lighter);
+}
+
+.el-dialog {
+  border-radius: 12px;
+}
+
+.el-dialog__header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--el-border-color-lighter);
+  margin-right: 0;
+}
+
+.el-dialog__body {
+  padding: 20px 24px;
+}
+
+.el-dialog__footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--el-border-color-lighter);
+}

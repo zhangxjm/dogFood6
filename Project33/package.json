@@ -1,0 +1,26 @@
+{
+  "name": "cross-border-payment-risk-control",
+  "version": "1.0.0",
+  "description": "Cross-border payment settlement risk control system",
+  "main": "server/app.js",
+  "scripts": {
+    "start": "node server/app.js",
+    "init": "node server/utils/initData.js",
+    "server": "node server/app.js",
+    "client": "cd client && npm start",
+    "build": "cd client && npm run build",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "sqlite3": "^5.1.7",
+    "uuid": "^9.0.1",
+    "axios": "^1.6.7",
+    "dotenv": "^16.4.5",
+    "joi": "^17.12.2",
+    "node-cron": "^3.0.3",
+    "winston": "^3.12.0",
+    "concurrently": "^8.2.2"
+  }
+}

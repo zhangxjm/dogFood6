@@ -1,0 +1,187 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding-bottom: 160rpx;
+}
+
+.heroImage {
+  width: 100%;
+  height: 480rpx;
+}
+
+.content {
+  padding: 0 $page-padding;
+  margin-top: -40rpx;
+  position: relative;
+}
+
+.mainCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+}
+
+.serviceName {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-sm;
+}
+
+.tagRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: $spacing-md;
+}
+
+.categoryTag {
+  background: $color-tag-bg;
+  border-radius: $radius-xs;
+  padding: 6rpx 16rpx;
+  margin-right: $spacing-sm;
+}
+
+.categoryTagText {
+  font-size: $font-size-xs;
+  color: $color-tag-text;
+  white-space: nowrap;
+}
+
+.durationTag {
+  background: #E8F5E9;
+  border-radius: $radius-xs;
+  padding: 6rpx 16rpx;
+}
+
+.durationTagText {
+  font-size: $font-size-xs;
+  color: #4CAF50;
+  white-space: nowrap;
+}
+
+.priceRow {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+}
+
+.priceSymbol {
+  font-size: $font-size-md;
+  color: $color-price;
+  font-weight: $font-weight-bold;
+}
+
+.priceValue {
+  font-size: 56rpx;
+  color: $color-price;
+  font-weight: $font-weight-bold;
+  line-height: 1;
+}
+
+.priceUnit {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  margin-left: 8rpx;
+}
+
+.descCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+}
+
+.descTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+}
+
+.descText {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  line-height: $line-height-loose;
+}
+
+.infoCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+}
+
+.infoTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+}
+
+.infoRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-sm 0;
+
+  &:not(:last-child) {
+    border-bottom: 1rpx solid $color-divider;
+  }
+}
+
+.infoLabel {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.infoValue {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  font-weight: $font-weight-medium;
+}
+
+.bottomBar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: $color-bg-card;
+  padding: $spacing-md $page-padding;
+  padding-bottom: calc(#{$spacing-md} + env(safe-area-inset-bottom));
+  box-shadow: $shadow-float;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.bookBtn {
+  flex: 1;
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  border-radius: $radius-button;
+  height: $button-height-lg;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}
+
+.bookBtnText {
+  font-size: $font-size-lg;
+  color: $color-text-white;
+  font-weight: $font-weight-medium;
+  white-space: nowrap;
+}

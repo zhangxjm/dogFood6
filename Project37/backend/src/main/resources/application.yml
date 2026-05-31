@@ -1,0 +1,41 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+spring:
+  application:
+    name: document-archive
+  datasource:
+    url: jdbc:h2:file:./data/document_archive;DB_CLOSE_DELAY=-1;MODE=MySQL
+    driver-class-name: org.h2.Driver
+    username: admin
+    password: admin123
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+
+document:
+  storage:
+    path: ./data/documents
+
+jwt:
+  secret: document-archive-secret-key-2024-for-enterprise-management-system
+  expiration: 86400000
+
+logging:
+  level:
+    com.docarchive: INFO
+    org.springframework.security: INFO

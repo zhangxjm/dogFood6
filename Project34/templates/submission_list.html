@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}投稿信息 - 校园广播站管理系统{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 style="margin: 0;">📝 投稿信息</h2>
+        <a href="{% url 'submission_new' %}" class="btn">我要投稿</a>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>标题</th>
+                <th>投稿人</th>
+                <th>投稿类型</th>
+                <th>投稿时间</th>
+                <th>状态</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for submission in submissions %}
+            <tr>
+                <td>{{ submission.title }}</td>
+                <td>{{ submission.submitter_name }}</td>
+                <td>{{ submission.get_submission_type_display }}</td>
+                <td>{{ submission.submitted_at|date:"Y-m-d H:i" }}</td>
+                <td>
+                    <span class="status-badge status-{{ submission.status }}">
+                        {{ submission.get_status_display }}
+                    </span>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" style="text-align: center; color: #999; padding: 30px;">暂无投稿信息</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

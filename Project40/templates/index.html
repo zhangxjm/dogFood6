@@ -1,0 +1,67 @@
+{{define "index.html"}}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.Title}} - 短途货运调度系统</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    {{template "nav" .}}
+    <main class="content">
+        <div class="page-header">
+            <h1>系统概览</h1>
+        </div>
+        <div class="stats-grid">
+            <div class="stat-card stat-blue">
+                <div class="stat-number">{{.VehicleCount}}</div>
+                <div class="stat-label">登记车辆</div>
+            </div>
+            <div class="stat-card stat-green">
+                <div class="stat-number">{{.OrderCount}}</div>
+                <div class="stat-label">运输订单</div>
+            </div>
+            <div class="stat-card stat-orange">
+                <div class="stat-number">{{.RouteCount}}</div>
+                <div class="stat-label">运输路线</div>
+            </div>
+            <div class="stat-card stat-red">
+                <div class="stat-number">{{.DeliveringCount}}</div>
+                <div class="stat-label">运输中</div>
+            </div>
+        </div>
+        <div class="section">
+            <h2 class="section-title">最近订单</h2>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>订单号</th>
+                        <th>货物</th>
+                        <th>车辆</th>
+                        <th>路线</th>
+                        <th>状态</th>
+                        <th>创建时间</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{range .RecentOrders}}
+                    <tr>
+                        <td>{{.OrderNo}}</td>
+                        <td>{{.CargoName}}</td>
+                        <td>{{.Vehicle.LicensePlate}}</td>
+                        <td>{{.Route.Name}}</td>
+                        <td><span class="badge badge-{{orderStatusClass .Status}}">{{.Status}}</span></td>
+                        <td>{{.CreatedAt.Format "2006-01-02 15:04"}}</td>
+                    </tr>
+                    {{else}}
+                    <tr><td colspan="6" class="empty-text">暂无订单数据</td></tr>
+                    {{end}}
+                </tbody>
+            </table>
+        </div>
+    </main>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
+{{end}}

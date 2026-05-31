@@ -1,0 +1,22 @@
+FROM node:18-alpine as builder
+
+WORKDIR /app/client
+
+COPY client/package.json ./
+COPY client/package-lock.json* ./
+
+RUN npm ci --no-audit --no-fund
+
+COPY client/ ./
+
+RUN npm run build
+
+FROM node:18-alpine
+
+WORKDIR /app
+
+COPY --from=builder /app/client/dist ./client/dist
+
+EXPOSE 3000
+
+CMD ["npx", "serve", "-s", "client/dist", "-l", "3001"]

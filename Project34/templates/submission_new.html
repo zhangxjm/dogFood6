@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}我要投稿 - 校园广播站管理系统{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>📝 我要投稿</h2>
+    <form method="post" style="max-width: 600px;">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="title">标题 *</label>
+            <input type="text" id="title" name="title" required placeholder="请输入标题">
+        </div>
+        <div class="form-group">
+            <label for="submitter_name">投稿人姓名 *</label>
+            <input type="text" id="submitter_name" name="submitter_name" required placeholder="请输入您的姓名">
+        </div>
+        <div class="form-group">
+            <label for="submitter_class">投稿人班级</label>
+            <input type="text" id="submitter_class" name="submitter_class" placeholder="请输入您的班级（选填）">
+        </div>
+        <div class="form-group">
+            <label for="submission_type">投稿类型 *</label>
+            <select id="submission_type" name="submission_type" required>
+                <option value="">请选择投稿类型</option>
+                <option value="song">歌曲点播</option>
+                <option value="article">文章投稿</option>
+                <option value="story">故事投稿</option>
+                <option value="blessing">祝福语</option>
+                <option value="other">其他</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="content">内容 *</label>
+            <textarea id="content" name="content" rows="6" required placeholder="请输入投稿内容"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="contact">联系方式</label>
+            <input type="text" id="contact" name="contact" placeholder="请输入您的联系方式（选填）">
+        </div>
+        <div style="margin-top: 25px;">
+            <button type="submit" class="btn">提交投稿</button>
+            <a href="{% url 'submission_list' %}" class="btn btn-secondary" style="margin-left: 10px;">返回列表</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,63 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary: #0F766E;
+  --color-primary-light: #14B8A6;
+  --color-primary-dark: #115E59;
+  --color-accent: #F59E0B;
+  --color-accent-light: #FBBF24;
+  --color-accent-dark: #D97706;
+  --color-bg: #F5F7FA;
+  --color-card: #FFFFFF;
+  --color-text: #1F2937;
+  --color-text-secondary: #6B7280;
+  --color-border: #E5E7EB;
+  font-family: 'Noto Sans SC', system-ui, -apple-system, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary-700 text-white px-4 py-2 rounded-lg hover:bg-primary-800 transition-colors duration-200 font-medium;
+  }
+  .btn-accent {
+    @apply bg-accent-500 text-white px-4 py-2 rounded-lg hover:bg-accent-600 transition-colors duration-200 font-medium;
+  }
+  .btn-outline {
+    @apply border border-primary-700 text-primary-700 px-4 py-2 rounded-lg hover:bg-primary-50 transition-colors duration-200 font-medium;
+  }
+  .card {
+    @apply bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.2s ease-out;
+}
+
+.animate-slideUp {
+  animation: slideUp 0.3s ease-out;
+}

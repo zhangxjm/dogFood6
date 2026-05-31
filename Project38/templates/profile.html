@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}{{ user.nickname or user.username }}的个人主页 - 方言文化分享平台{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="profile-header">
+        <div class="profile-avatar">
+            {% if user.avatar %}
+            <img src="{{ url_for('static', filename='uploads/' + user.avatar) }}" alt="" class="avatar-large">
+            {% else %}
+            <div class="avatar-placeholder-large">{{ (user.nickname or user.username)[0] }}</div>
+            {% endif %}
+        </div>
+        <div class="profile-info">
+            <h1>{{ user.nickname or user.username }}</h1>
+            {% if user.bio %}
+            <p class="profile-bio">{{ user.bio }}</p>
+            {% endif %}
+            {% if user.region_info %}
+            <p class="profile-region"><i class="fas fa-map-marker-alt"></i> {{ user.region_info.name }}</p>
+            {% endif %}
+            <p class="profile-joined"><i class="fas fa-calendar"></i> 加入于 {{ user.created_at.strftime('%Y-%m-%d') if user.created_at else '' }}</p>
+        </div>
+        <div class="profile-stats">
+            <div class="profile-stat">
+                <span class="stat-number">{{ user.posts.count() }}</span>
+                <span class="stat-label">发布</span>
+            </div>
+            <div class="profile-stat">
+                <span class="stat-number">{{ user.comments.count() }}</span>
+                <span class="stat-label">评论</span>
+            </div>
+            <div class="profile-stat">
+                <span class="stat-number">{{ user.likes.count() }}</span>
+                <span class="stat-label">点赞</span>
+            </div>
+        </div>
+        {% if current_user and current_user.id == user.id %}
+        <a href="{{ url_for('edit_profile') }}" class="btn btn-outline"><i class="fas fa-edit"></i> 编辑资料</a>
+        {% endif %}
+    </div>
+
+    <div class="profile-posts">
+        <h2 class="section-title"><i class="fas fa-microphone-alt"></i> 发布的方言</h2>
+        {% if posts %}
+        <div class="posts-grid">
+            {% for post in posts %}
+            <div class="post-card">
+                <div class="post-region-tag">
+                    <i class="fas fa-map-marker-alt"></i> {{ post.region_info.name if post.region_info else '未分类' }}
+                </div>
+                <div class="post-card-body">
+                    <h3 class="post-title">
+                        <a href="{{ url_for('post_detail', post_id=post.id) }}">{{ post.title }}</a>
+                    </h3>
+                    <p class="post-excerpt">{{ post.description[:80] }}{% if post.description|length > 80 %}...{% endif %}</p>
+                    {% if post.dialect_text %}
+                    <div class="post-dialect">
+                        <i class="fas fa-quote-left"></i> {{ post.dialect_text[:50] }}{% if post.dialect_text|length > 50 %}...{% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="post-card-footer">
+                    <span class="post-time">{{ post.created_at.strftime('%Y-%m-%d') }}</span>
+                    <div class="post-stats">
+                        <span><i class="fas fa-heart"></i> {{ post.likes_count or 0 }}</span>
+                        <span><i class="fas fa-comment"></i> {{ post.comments.count() }}</span>
+                        <span><i class="fas fa-eye"></i> {{ post.views_count or 0 }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if pagination.pages > 1 %}
+        <div class="pagination">
+            {% if pagination.has_prev %}
+            <a href="{{ url_for('profile', page=pagination.prev_num) if current_user and current_user.id == user.id else url_for('user_profile', user_id=user.id, page=pagination.prev_num) }}" class="page-btn">
+                <i class="fas fa-chevron-left"></i> 上一页
+            </a>
+            {% endif %}
+            {% for p in pagination.iter_pages() %}
+                {% if p %}
+                <a href="{{ url_for('profile', page=p) if current_user and current_user.id == user.id else url_for('user_profile', user_id=user.id, page=p) }}" class="page-btn {% if p == pagination.page %}active{% endif %}">{{ p }}</a>
+                {% else %}
+                <span class="page-ellipsis">...</span>
+                {% endif %}
+            {% endfor %}
+            {% if pagination.has_next %}
+            <a href="{{ url_for('profile', page=pagination.next_num) if current_user and current_user.id == user.id else url_for('user_profile', user_id=user.id, page=pagination.next_num) }}" class="page-btn">
+                下一页 <i class="fas fa-chevron-right"></i>
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-microphone-slash"></i>
+            <p>暂无发布内容</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

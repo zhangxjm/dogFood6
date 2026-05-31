@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: bci-backend
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - DB_PATH=./data/bci_rehab.db
+      - JWT_SECRET=your-super-secret-jwt-key-change-in-production
+      - ENCRYPTION_KEY=your-32-byte-encryption-key-here
+    volumes:
+      - ./backend/data:/app/data
+    networks:
+      - bci-network
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: bci-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - bci-network
+
+networks:
+  bci-network:
+    driver: bridge
+
+volumes:
+  backend-data:

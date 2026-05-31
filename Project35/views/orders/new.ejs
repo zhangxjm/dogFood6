@@ -1,0 +1,96 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="mb-0">
+                        <i class="fa fa-calendar-plus-o me-2 text-primary"></i>预约维修服务
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form action="/orders" method="POST">
+                        <div class="mb-3">
+                            <label class="form-label">维修服务类型 <span class="text-danger">*</span></label>
+                            <select name="service_type_id" class="form-select" required>
+                                <option value="">请选择服务类型</option>
+                                <% services.forEach(function(service) { %>
+                                    <option value="<%= service.id %>" <%= selectedServiceId == service.id ? 'selected' : '' %>>
+                                        <%= service.name %> - 起步价 ¥<%= service.base_price %>
+                                    </option>
+                                <% }) %>
+                            </select>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">您的姓名 <span class="text-danger">*</span></label>
+                                <input type="text" name="customer_name" class="form-control" placeholder="请输入您的姓名" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">联系电话 <span class="text-danger">*</span></label>
+                                <input type="tel" name="customer_phone" class="form-control" placeholder="请输入联系电话" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">服务地址 <span class="text-danger">*</span></label>
+                            <input type="text" name="customer_address" class="form-control" placeholder="请输入详细地址，如：XX小区X号楼X单元XXX室" required>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">预约日期 <span class="text-danger">*</span></label>
+                                <input type="date" name="appointment_date" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">预约时间 <span class="text-danger">*</span></label>
+                                <select name="appointment_time" class="form-select" required>
+                                    <option value="">请选择时间段</option>
+                                    <option value="08:00-09:00">08:00-09:00</option>
+                                    <option value="09:00-10:00">09:00-10:00</option>
+                                    <option value="10:00-11:00">10:00-11:00</option>
+                                    <option value="11:00-12:00">11:00-12:00</option>
+                                    <option value="14:00-15:00">14:00-15:00</option>
+                                    <option value="15:00-16:00">15:00-16:00</option>
+                                    <option value="16:00-17:00">16:00-17:00</option>
+                                    <option value="17:00-18:00">17:00-18:00</option>
+                                    <option value="18:00-19:00">18:00-19:00</option>
+                                    <option value="19:00-20:00">19:00-20:00</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">故障描述</label>
+                            <textarea name="problem_description" class="form-control" rows="3" placeholder="请描述一下故障情况，帮助我们更好地准备维修"></textarea>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <i class="fa fa-info-circle me-2"></i>
+                            <strong>温馨提示：</strong>提交预约后，我们将尽快安排专业技师与您联系确认。起步价仅供参考，最终费用以实际维修情况为准。
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="/" class="btn btn-outline-secondary">返回首页</a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fa fa-check me-2"></i>提交预约
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const dateInput = document.querySelector('input[name="appointment_date"]');
+    const today = new Date().toISOString().split('T')[0];
+    dateInput.setAttribute('min', today);
+});
+</script>
+
+<%- include('../partials/footer') %>

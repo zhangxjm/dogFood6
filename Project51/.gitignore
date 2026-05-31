@@ -1,0 +1,14 @@
+node_modules/
+.next/
+dist/
+build/
+*.db
+*.sqlite
+*.sqlite3
+.env.local
+.env.production
+go.sum
+vendor/
+.DS_Store
+*.log
+coverage/

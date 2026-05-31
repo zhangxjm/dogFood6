@@ -1,0 +1,34 @@
+{{define "header"}}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.Title}} - 苗木种植基地管理系统</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌱 苗木种植基地种苗信息管理系统</h1>
+            <nav>
+                <a href="/" {{if eq .Title "苗木种植基地种苗信息管理系统"}}class="active"{{end}}>首页</a>
+                <a href="/categories" {{if eq .Title "种苗品类管理"}}class="active"{{end}}>种苗品类</a>
+                <a href="/batches" {{if eq .Title "种植批次管理"}}class="active"{{end}}>种植批次</a>
+                <a href="/outputs" {{if eq .Title "出苗数量管理"}}class="active"{{end}}>出苗数量</a>
+                <a href="/shipments" {{if eq .Title "外销发货记录"}}class="active"{{end}}>外销发货</a>
+            </nav>
+        </header>
+        <main>
+{{end}}
+
+{{define "footer"}}
+        </main>
+        <footer>
+            <p>&copy; 2024 苗木种植基地种苗信息管理系统</p>
+        </footer>
+    </div>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
+{{end}}

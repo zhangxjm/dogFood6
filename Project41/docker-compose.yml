@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: bakery-backend
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend/bakery.db:/app/bakery.db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:sqlite:/app/bakery.db
+    networks:
+      - bakery-network
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: bakery-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - bakery-network
+    restart: unless-stopped
+
+networks:
+  bakery-network:
+    driver: bridge
+
+volumes:
+  bakery-db:

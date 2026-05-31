@@ -1,0 +1,300 @@
+{{template "header" .}}
+<div class="page-header">
+    <h2>外销发货记录</h2>
+    <button class="btn btn-primary" onclick="openShipmentModal()">+ 新增发货</button>
+</div>
+
+<div class="filter-bar">
+    <select id="filter-category" onchange="loadShipments()">
+        <option value="">全部品类</option>
+    </select>
+    <select id="filter-status" onchange="loadShipments()">
+        <option value="">全部状态</option>
+        <option value="待发货">待发货</option>
+        <option value="已发货">已发货</option>
+        <option value="运输中">运输中</option>
+        <option value="已签收">已签收</option>
+    </select>
+</div>
+
+<table class="data-table" id="shipments-table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>客户名称</th>
+            <th>联系人</th>
+            <th>联系电话</th>
+            <th>品类</th>
+            <th>发货日期</th>
+            <th>数量</th>
+            <th>单价</th>
+            <th>总金额</th>
+            <th>状态</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<div class="summary-bar">
+    <strong>发货总计：</strong><span id="total-shipments">0</span> 笔，
+    <strong>总金额：</strong><span id="total-amount">¥0.00</span>
+</div>
+
+<div class="modal" id="shipment-modal">
+    <div class="modal-content modal-large">
+        <div class="modal-header">
+            <h3 id="shipment-modal-title">新增发货</h3>
+            <span class="close" onclick="closeModal('shipment-modal')">&times;</span>
+        </div>
+        <div class="modal-body">
+            <form id="shipment-form">
+                <input type="hidden" id="shipment-id">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>客户名称 *</label>
+                        <input type="text" id="shipment-customer-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>联系人</label>
+                        <input type="text" id="shipment-contact">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>联系电话</label>
+                        <input type="text" id="shipment-phone">
+                    </div>
+                    <div class="form-group">
+                        <label>发货日期 *</label>
+                        <input type="date" id="shipment-ship-date" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>收货地址</label>
+                    <input type="text" id="shipment-address">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>品类 *</label>
+                        <select id="shipment-category-id" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label>数量 *</label>
+                        <input type="number" id="shipment-quantity" required min="1" onchange="calculateTotal()">
+                    </div>
+                    <div class="form-group">
+                        <label>单价(元) *</label>
+                        <input type="number" id="shipment-unit-price" required min="0" step="0.01" onchange="calculateTotal()">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>总金额</label>
+                    <input type="text" id="shipment-total-amount" readonly>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>状态 *</label>
+                        <select id="shipment-status" required>
+                            <option value="待发货">待发货</option>
+                            <option value="已发货">已发货</option>
+                            <option value="运输中">运输中</option>
+                            <option value="已签收">已签收</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>物流公司</label>
+                        <input type="text" id="shipment-logistics">
+                    </div>
+                    <div class="form-group">
+                        <label>物流单号</label>
+                        <input type="text" id="shipment-tracking-no">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>备注</label>
+                    <textarea id="shipment-remarks" rows="3"></textarea>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal('shipment-modal')">取消</button>
+            <button class="btn btn-primary" onclick="saveShipment()">保存</button>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadCategoriesForFilter();
+    loadCategoriesForSelect();
+    loadShipments();
+});
+
+function loadCategoriesForFilter() {
+    fetch('/api/categories')
+        .then(r => r.json())
+        .then(data => {
+            const select = document.getElementById('filter-category');
+            data.forEach(c => {
+                const option = document.createElement('option');
+                option.value = c.id;
+                option.textContent = c.name;
+                select.appendChild(option);
+            });
+        });
+}
+
+function loadCategoriesForSelect() {
+    fetch('/api/categories')
+        .then(r => r.json())
+        .then(data => {
+            const select = document.getElementById('shipment-category-id');
+            select.innerHTML = '';
+            data.forEach(c => {
+                const option = document.createElement('option');
+                option.value = c.id;
+                option.textContent = c.name;
+                select.appendChild(option);
+            });
+        });
+}
+
+function loadShipments() {
+    const categoryId = document.getElementById('filter-category').value;
+    const status = document.getElementById('filter-status').value;
+
+    fetch('/api/shipments')
+        .then(r => r.json())
+        .then(data => {
+            let filtered = data;
+            if (categoryId) {
+                filtered = filtered.filter(s => s.category_id == categoryId);
+            }
+            if (status) {
+                filtered = filtered.filter(s => s.status === status);
+            }
+
+            const totalCount = filtered.length;
+            const totalAmount = filtered.reduce((sum, s) => sum + s.total_amount, 0);
+            document.getElementById('total-shipments').textContent = totalCount;
+            document.getElementById('total-amount').textContent = '¥' + totalAmount.toLocaleString();
+
+            const tbody = document.querySelector('#shipments-table tbody');
+            tbody.innerHTML = filtered.map(s => `
+                <tr>
+                    <td>${s.id}</td>
+                    <td>${s.customer_name}</td>
+                    <td>${s.contact || '-'}</td>
+                    <td>${s.phone || '-'}</td>
+                    <td>${s.category.name}</td>
+                    <td>${formatDate(s.ship_date)}</td>
+                    <td>${s.quantity.toLocaleString()}</td>
+                    <td>¥${s.unit_price.toLocaleString()}</td>
+                    <td><strong>¥${s.total_amount.toLocaleString()}</strong></td>
+                    <td><span class="status-badge ${getStatusClass(s.status)}">${s.status}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-view" onclick="viewShipment(${s.id})">详情</button>
+                        <button class="btn btn-sm btn-edit" onclick="editShipment(${s.id})">编辑</button>
+                        <button class="btn btn-sm btn-delete" onclick="deleteShipment(${s.id})">删除</button>
+                    </td>
+                </tr>
+            `).join('');
+        });
+}
+
+function calculateTotal() {
+    const quantity = parseFloat(document.getElementById('shipment-quantity').value) || 0;
+    const unitPrice = parseFloat(document.getElementById('shipment-unit-price').value) || 0;
+    const total = quantity * unitPrice;
+    document.getElementById('shipment-total-amount').value = '¥' + total.toLocaleString();
+}
+
+function openShipmentModal() {
+    document.getElementById('shipment-modal-title').textContent = '新增发货';
+    document.getElementById('shipment-form').reset();
+    document.getElementById('shipment-id').value = '';
+    document.getElementById('shipment-ship-date').value = new Date().toISOString().split('T')[0];
+    document.getElementById('shipment-total-amount').value = '¥0.00';
+    document.getElementById('shipment-modal').style.display = 'block';
+}
+
+function editShipment(id) {
+    fetch(`/api/shipments/${id}`)
+        .then(r => r.json())
+        .then(s => {
+            document.getElementById('shipment-modal-title').textContent = '编辑发货';
+            document.getElementById('shipment-id').value = s.id;
+            document.getElementById('shipment-customer-name').value = s.customer_name;
+            document.getElementById('shipment-contact').value = s.contact || '';
+            document.getElementById('shipment-phone').value = s.phone || '';
+            document.getElementById('shipment-ship-date').value = formatDateInput(s.ship_date);
+            document.getElementById('shipment-address').value = s.address || '';
+            document.getElementById('shipment-category-id').value = s.category_id;
+            document.getElementById('shipment-quantity').value = s.quantity;
+            document.getElementById('shipment-unit-price').value = s.unit_price;
+            document.getElementById('shipment-status').value = s.status;
+            document.getElementById('shipment-logistics').value = s.logistics || '';
+            document.getElementById('shipment-tracking-no').value = s.tracking_no || '';
+            document.getElementById('shipment-remarks').value = s.remarks || '';
+            calculateTotal();
+            document.getElementById('shipment-modal').style.display = 'block';
+        });
+}
+
+function viewShipment(id) {
+    fetch(`/api/shipments/${id}`)
+        .then(r => r.json())
+        .then(s => {
+            alert(`发货详情\n\n客户：${s.customer_name}\n联系人：${s.contact || '-'}\n电话：${s.phone || '-'}\n地址：${s.address || '-'}\n品类：${s.category.name}\n数量：${s.quantity}\n单价：¥${s.unit_price}\n总金额：¥${s.total_amount}\n发货日期：${formatDate(s.ship_date)}\n状态：${s.status}\n物流：${s.logistics || '-'}\n单号：${s.tracking_no || '-'}`);
+        });
+}
+
+function saveShipment() {
+    const id = document.getElementById('shipment-id').value;
+    const data = {
+        customer_name: document.getElementById('shipment-customer-name').value,
+        contact: document.getElementById('shipment-contact').value,
+        phone: document.getElementById('shipment-phone').value,
+        address: document.getElementById('shipment-address').value,
+        ship_date: document.getElementById('shipment-ship-date').value,
+        category_id: parseInt(document.getElementById('shipment-category-id').value),
+        quantity: parseInt(document.getElementById('shipment-quantity').value),
+        unit_price: parseFloat(document.getElementById('shipment-unit-price').value),
+        status: document.getElementById('shipment-status').value,
+        logistics: document.getElementById('shipment-logistics').value,
+        tracking_no: document.getElementById('shipment-tracking-no').value,
+        remarks: document.getElementById('shipment-remarks').value
+    };
+
+    const method = id ? 'PUT' : 'POST';
+    const url = id ? `/api/shipments/${id}` : '/api/shipments';
+
+    fetch(url, {
+        method: method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    }).then(r => {
+        if (r.ok) {
+            closeModal('shipment-modal');
+            loadShipments();
+        } else {
+            alert('保存失败');
+        }
+    });
+}
+
+function deleteShipment(id) {
+    if (confirm('确定要删除这条发货记录吗？')) {
+        fetch(`/api/shipments/${id}`, { method: 'DELETE' })
+            .then(r => {
+                if (r.ok) {
+                    loadShipments();
+                } else {
+                    alert('删除失败');
+                }
+            });
+    }
+}
+</script>
+{{template "footer" .}}

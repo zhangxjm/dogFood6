@@ -1,0 +1,15 @@
+{{define "nav"}}
+<nav class="sidebar">
+    <div class="sidebar-header">
+        <h2>货运调度</h2>
+        <p>短途车辆调度系统</p>
+    </div>
+    <ul class="nav-menu">
+        <li><a href="/" class="nav-link{{if eq .Active "index"}} active{{end}}">系统概览</a></li>
+        <li><a href="/vehicles" class="nav-link{{if eq .Active "vehicles"}} active{{end}}">车辆登记</a></li>
+        <li><a href="/orders" class="nav-link{{if eq .Active "orders"}} active{{end}}">运输订单</a></li>
+        <li><a href="/routes" class="nav-link{{if eq .Active "routes"}} active{{end}}">运输路线</a></li>
+        <li><a href="/delivery" class="nav-link{{if eq .Active "delivery"}} active{{end}}">送达状态</a></li>
+    </ul>
+</nav>
+{{end}}

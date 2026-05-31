@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>家用闲置家电出租信息发布系统</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>家用闲置家电出租信息发布系统</h1>
+        <nav>
+            <button onclick="showSection('appliances', event)" class="nav-btn active">家电列表</button>
+            <button onclick="showSection('publish', event)" class="nav-btn">发布家电</button>
+            <button onclick="showSection('rentals', event)" class="nav-btn">租赁记录</button>
+            <button onclick="showSection('reminders', event)" class="nav-btn">到期提醒</button>
+        </nav>
+    </header>
+
+    <main>
+        <section id="appliances" class="section active">
+            <div class="section-header">
+                <h2>可租家电列表</h2>
+                <div class="filters">
+                    <select id="categoryFilter" onchange="loadAppliances()">
+                        <option value="">全部分类</option>
+                    </select>
+                    <select id="statusFilter" onchange="loadAppliances()">
+                        <option value="">全部状态</option>
+                        <option value="available">可租</option>
+                        <option value="rented">已租</option>
+                    </select>
+                </div>
+            </div>
+            <div id="applianceList" class="card-grid"></div>
+        </section>
+
+        <section id="publish" class="section">
+            <h2>发布出租家电</h2>
+            <form id="publishForm" class="form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>家电名称 *</label>
+                        <input type="text" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>分类 *</label>
+                        <select name="category" required>
+                            <option value="">请选择分类</option>
+                            <option value="冰箱">冰箱</option>
+                            <option value="空调">空调</option>
+                            <option value="洗衣机">洗衣机</option>
+                            <option value="电视">电视</option>
+                            <option value="微波炉">微波炉</option>
+                            <option value="其他">其他</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>品牌</label>
+                        <input type="text" name="brand">
+                    </div>
+                    <div class="form-group">
+                        <label>型号</label>
+                        <input type="text" name="model">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>描述</label>
+                    <textarea name="description" rows="3"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>日租金（元） *</label>
+                        <input type="number" name="daily_price" step="0.01" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label>位置</label>
+                        <input type="text" name="location">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>联系人 *</label>
+                        <input type="text" name="contact_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>联系电话 *</label>
+                        <input type="tel" name="contact_phone" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary">发布家电</button>
+            </form>
+        </section>
+
+        <section id="rentals" class="section">
+            <h2>租赁记录</h2>
+            <div id="rentalList" class="table-container"></div>
+        </section>
+
+        <section id="reminders" class="section">
+            <h2>租赁到期提醒</h2>
+            <div id="reminderList"></div>
+        </section>
+    </main>
+
+    <div id="rentalModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h3>租赁登记</h3>
+            <div id="rentalApplianceInfo"></div>
+            <form id="rentalForm" class="form">
+                <input type="hidden" name="appliance_id" id="rentalApplianceId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>租客姓名 *</label>
+                        <input type="text" name="renter_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>租客电话 *</label>
+                        <input type="tel" name="renter_phone" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>开始日期 *</label>
+                        <input type="date" name="start_date" required>
+                    </div>
+                    <div class="form-group">
+                        <label>结束日期 *</label>
+                        <input type="date" name="end_date" required>
+                    </div>
+                </div>
+                <div id="rentalPricePreview"></div>
+                <button type="submit" class="btn-primary">确认租赁</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

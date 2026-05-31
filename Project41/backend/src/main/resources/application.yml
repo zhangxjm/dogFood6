@@ -1,0 +1,22 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+spring:
+  datasource:
+    url: jdbc:sqlite:bakery.db
+    driver-class-name: org.sqlite.JDBC
+    username: admin
+    password: admin123
+  jpa:
+    database-platform: org.hibernate.community.dialect.SQLiteDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  cors:
+    allow-origins: http://localhost:5173,http://localhost:8080

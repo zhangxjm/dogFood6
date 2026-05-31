@@ -1,0 +1,126 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding-bottom: 120rpx;
+}
+
+.header {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  padding: 40rpx $page-padding 32rpx;
+}
+
+.headerTop {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-lg;
+}
+
+.brand {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  color: $color-text-white;
+}
+
+.searchBar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: $radius-round;
+  padding: 14rpx 24rpx;
+}
+
+.searchPlaceholder {
+  font-size: $font-size-sm;
+  color: rgba(255, 255, 255, 0.7);
+  margin-left: 12rpx;
+}
+
+.bannerWrap {
+  margin: $spacing-lg $page-padding 0;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  box-shadow: $shadow-card;
+}
+
+.bannerImage {
+  width: 100%;
+  height: 320rpx;
+}
+
+.section {
+  margin-top: $spacing-lg;
+  padding: 0 $page-padding;
+}
+
+.sectionTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+}
+
+.categoryScroll {
+  white-space: nowrap;
+}
+
+.categoryList {
+  display: flex;
+  flex-direction: row;
+  padding: 0 $page-padding;
+  margin-top: $spacing-lg;
+}
+
+.categoryItem {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14rpx 32rpx;
+  border-radius: $radius-round;
+  background: $color-bg-card;
+  margin-right: $spacing-sm;
+  box-shadow: $shadow-card;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}
+
+.categoryItemActive {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+}
+
+.categoryText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  white-space: nowrap;
+}
+
+.categoryTextActive {
+  color: $color-text-white;
+  font-weight: $font-weight-medium;
+}
+
+.serviceList {
+  padding: 0 $page-padding;
+  margin-top: $spacing-md;
+}
+
+.emptyTip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80rpx 0;
+}
+
+.emptyText {
+  font-size: $font-size-md;
+  color: $color-text-tertiary;
+}

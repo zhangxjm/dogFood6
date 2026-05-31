@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}{{ region.name }} - 方言文化分享平台{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="region-header">
+        <div class="region-header-content">
+            <h1><i class="fas fa-map-pin"></i> {{ region.name }}</h1>
+            <p>{{ region.description }}</p>
+            <span class="region-post-count">共 {{ region.posts.count() }} 条方言内容</span>
+        </div>
+    </div>
+
+    {% if posts %}
+    <div class="posts-grid">
+        {% for post in posts %}
+        <div class="post-card">
+            <div class="post-region-tag">
+                <i class="fas fa-map-marker-alt"></i> {{ region.name }}
+            </div>
+            <div class="post-card-body">
+                <h3 class="post-title">
+                    <a href="{{ url_for('post_detail', post_id=post.id) }}">{{ post.title }}</a>
+                </h3>
+                <p class="post-excerpt">{{ post.description[:80] }}{% if post.description|length > 80 %}...{% endif %}</p>
+                {% if post.dialect_text %}
+                <div class="post-dialect">
+                    <i class="fas fa-quote-left"></i> {{ post.dialect_text[:50] }}{% if post.dialect_text|length > 50 %}...{% endif %}
+                </div>
+                {% endif %}
+                {% if post.audio_path %}
+                <div class="post-audio-badge">
+                    <i class="fas fa-volume-up"></i> 含音频
+                </div>
+                {% endif %}
+            </div>
+            <div class="post-card-footer">
+                <div class="post-author">
+                    {% if post.author.avatar %}
+                    <img src="{{ url_for('static', filename='uploads/' + post.author.avatar) }}" alt="" class="avatar-small">
+                    {% else %}
+                    <div class="avatar-placeholder-small">{{ (post.author.nickname or post.author.username)[0] }}</div>
+                    {% endif %}
+                    <span>{{ post.author.nickname or post.author.username }}</span>
+                </div>
+                <div class="post-stats">
+                    <span><i class="fas fa-heart"></i> {{ post.likes_count or 0 }}</span>
+                    <span><i class="fas fa-comment"></i> {{ post.comments.count() }}</span>
+                    <span><i class="fas fa-eye"></i> {{ post.views_count or 0 }}</span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if pagination.pages > 1 %}
+    <div class="pagination">
+        {% if pagination.has_prev %}
+        <a href="{{ url_for('region_detail', region_id=region.id, page=pagination.prev_num) }}" class="page-btn">
+            <i class="fas fa-chevron-left"></i> 上一页
+        </a>
+        {% endif %}
+        {% for p in pagination.iter_pages() %}
+            {% if p %}
+            <a href="{{ url_for('region_detail', region_id=region.id, page=p) }}" class="page-btn {% if p == pagination.page %}active{% endif %}">{{ p }}</a>
+            {% else %}
+            <span class="page-ellipsis">...</span>
+            {% endif %}
+        {% endfor %}
+        {% if pagination.has_next %}
+        <a href="{{ url_for('region_detail', region_id=region.id, page=pagination.next_num) }}" class="page-btn">
+            下一页 <i class="fas fa-chevron-right"></i>
+        </a>
+        {% endif %}
+    </div>
+    {% endif %}
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-microphone-slash"></i>
+        <p>该方言区暂无内容，快来发布第一条吧！</p>
+        <a href="{{ url_for('publish') }}" class="btn btn-primary">发布方言</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,225 @@
+{{template "header" .}}
+<div class="page-header">
+    <h2>种植批次管理</h2>
+    <button class="btn btn-primary" onclick="openBatchModal()">+ 新增批次</button>
+</div>
+
+<div class="filter-bar">
+    <select id="filter-category" onchange="loadBatches()">
+        <option value="">全部品类</option>
+    </select>
+    <select id="filter-status" onchange="loadBatches()">
+        <option value="">全部状态</option>
+        <option value="苗期">苗期</option>
+        <option value="生长中">生长中</option>
+        <option value="可出苗">可出苗</option>
+        <option value="已完成">已完成</option>
+    </select>
+</div>
+
+<table class="data-table" id="batches-table">
+    <thead>
+        <tr>
+            <th>批次号</th>
+            <th>品类</th>
+            <th>种植日期</th>
+            <th>数量</th>
+            <th>位置</th>
+            <th>状态</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<div class="modal" id="batch-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="batch-modal-title">新增批次</h3>
+            <span class="close" onclick="closeModal('batch-modal')">&times;</span>
+        </div>
+        <div class="modal-body">
+            <form id="batch-form">
+                <input type="hidden" id="batch-id">
+                <div class="form-group">
+                    <label>批次号 *</label>
+                    <input type="text" id="batch-no" required>
+                </div>
+                <div class="form-group">
+                    <label>品类 *</label>
+                    <select id="batch-category-id" required></select>
+                </div>
+                <div class="form-group">
+                    <label>种植日期 *</label>
+                    <input type="date" id="batch-planting-date" required>
+                </div>
+                <div class="form-group">
+                    <label>数量 *</label>
+                    <input type="number" id="batch-quantity" required min="1">
+                </div>
+                <div class="form-group">
+                    <label>位置</label>
+                    <input type="text" id="batch-location">
+                </div>
+                <div class="form-group">
+                    <label>状态 *</label>
+                    <select id="batch-status" required>
+                        <option value="苗期">苗期</option>
+                        <option value="生长中">生长中</option>
+                        <option value="可出苗">可出苗</option>
+                        <option value="已完成">已完成</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>备注</label>
+                    <textarea id="batch-remarks" rows="3"></textarea>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal('batch-modal')">取消</button>
+            <button class="btn btn-primary" onclick="saveBatch()">保存</button>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadCategoriesForFilter();
+    loadCategoriesForSelect();
+    loadBatches();
+});
+
+let categories = [];
+
+function loadCategoriesForFilter() {
+    fetch('/api/categories')
+        .then(r => r.json())
+        .then(data => {
+            categories = data;
+            const select = document.getElementById('filter-category');
+            data.forEach(c => {
+                const option = document.createElement('option');
+                option.value = c.id;
+                option.textContent = c.name;
+                select.appendChild(option);
+            });
+        });
+}
+
+function loadCategoriesForSelect() {
+    fetch('/api/categories')
+        .then(r => r.json())
+        .then(data => {
+            const select = document.getElementById('batch-category-id');
+            select.innerHTML = '';
+            data.forEach(c => {
+                const option = document.createElement('option');
+                option.value = c.id;
+                option.textContent = c.name;
+                select.appendChild(option);
+            });
+        });
+}
+
+function loadBatches() {
+    const categoryId = document.getElementById('filter-category').value;
+    const status = document.getElementById('filter-status').value;
+
+    fetch('/api/batches')
+        .then(r => r.json())
+        .then(data => {
+            let filtered = data;
+            if (categoryId) {
+                filtered = filtered.filter(b => b.category_id == categoryId);
+            }
+            if (status) {
+                filtered = filtered.filter(b => b.status === status);
+            }
+
+            const tbody = document.querySelector('#batches-table tbody');
+            tbody.innerHTML = filtered.map(b => `
+                <tr>
+                    <td>${b.batch_no}</td>
+                    <td>${b.category.name}</td>
+                    <td>${formatDate(b.planting_date)}</td>
+                    <td>${b.quantity.toLocaleString()}</td>
+                    <td>${b.location || '-'}</td>
+                    <td><span class="status-badge ${getStatusClass(b.status)}">${b.status}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-edit" onclick="editBatch(${b.id})">编辑</button>
+                        <button class="btn btn-sm btn-delete" onclick="deleteBatch(${b.id})">删除</button>
+                    </td>
+                </tr>
+            `).join('');
+        });
+}
+
+function openBatchModal() {
+    document.getElementById('batch-modal-title').textContent = '新增批次';
+    document.getElementById('batch-form').reset();
+    document.getElementById('batch-id').value = '';
+    document.getElementById('batch-planting-date').value = new Date().toISOString().split('T')[0];
+    document.getElementById('batch-modal').style.display = 'block';
+}
+
+function editBatch(id) {
+    fetch(`/api/batches/${id}`)
+        .then(r => r.json())
+        .then(b => {
+            document.getElementById('batch-modal-title').textContent = '编辑批次';
+            document.getElementById('batch-id').value = b.id;
+            document.getElementById('batch-no').value = b.batch_no;
+            document.getElementById('batch-category-id').value = b.category_id;
+            document.getElementById('batch-planting-date').value = formatDateInput(b.planting_date);
+            document.getElementById('batch-quantity').value = b.quantity;
+            document.getElementById('batch-location').value = b.location || '';
+            document.getElementById('batch-status').value = b.status;
+            document.getElementById('batch-remarks').value = b.remarks || '';
+            document.getElementById('batch-modal').style.display = 'block';
+        });
+}
+
+function saveBatch() {
+    const id = document.getElementById('batch-id').value;
+    const data = {
+        batch_no: document.getElementById('batch-no').value,
+        category_id: parseInt(document.getElementById('batch-category-id').value),
+        planting_date: document.getElementById('batch-planting-date').value,
+        quantity: parseInt(document.getElementById('batch-quantity').value),
+        location: document.getElementById('batch-location').value,
+        status: document.getElementById('batch-status').value,
+        remarks: document.getElementById('batch-remarks').value
+    };
+
+    const method = id ? 'PUT' : 'POST';
+    const url = id ? `/api/batches/${id}` : '/api/batches';
+
+    fetch(url, {
+        method: method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    }).then(r => {
+        if (r.ok) {
+            closeModal('batch-modal');
+            loadBatches();
+        } else {
+            alert('保存失败');
+        }
+    });
+}
+
+function deleteBatch(id) {
+    if (confirm('确定要删除这个批次吗？')) {
+        fetch(`/api/batches/${id}`, { method: 'DELETE' })
+            .then(r => {
+                if (r.ok) {
+                    loadBatches();
+                } else {
+                    alert('删除失败，该批次可能已有出苗记录');
+                }
+            });
+    }
+}
+</script>
+{{template "footer" .}}

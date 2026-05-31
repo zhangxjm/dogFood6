@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}编辑资料 - 方言文化分享平台{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="form-container">
+        <h2 class="form-title"><i class="fas fa-user-edit"></i> 编辑个人资料</h2>
+        <form action="{{ url_for('edit_profile') }}" method="post" class="publish-form" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="nickname"><i class="fas fa-id-card"></i> 昵称</label>
+                <input type="text" id="nickname" name="nickname" value="{{ user.nickname or '' }}" placeholder="给自己取个好听的昵称">
+            </div>
+            <div class="form-group">
+                <label for="bio"><i class="fas fa-info-circle"></i> 个人简介</label>
+                <textarea id="bio" name="bio" rows="4" placeholder="介绍一下自己吧">{{ user.bio or '' }}</textarea>
+            </div>
+            <div class="form-group">
+                <label for="region_id"><i class="fas fa-map-marker-alt"></i> 所在方言区</label>
+                <select id="region_id" name="region_id">
+                    <option value="">-- 请选择方言区 --</option>
+                    {% for region in all_regions %}
+                    <option value="{{ region.id }}" {% if user.region_id == region.id %}selected{% endif %}>{{ region.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="avatar"><i class="fas fa-camera"></i> 头像</label>
+                <div class="file-upload-area">
+                    <input type="file" id="avatar" name="avatar" accept="image/*">
+                    {% if user.avatar %}
+                    <p class="current-file">当前头像：<img src="{{ url_for('static', filename='uploads/' + user.avatar) }}" alt="" class="avatar-small"></p>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary btn-lg"><i class="fas fa-save"></i> 保存修改</button>
+                <a href="{{ url_for('profile') }}" class="btn btn-outline btn-lg">取消</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

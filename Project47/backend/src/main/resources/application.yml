@@ -1,0 +1,61 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: ipr-protection-service
+
+  datasource:
+    url: jdbc:sqlite:ipr_database.db
+    driver-class-name: org.sqlite.JDBC
+    username: admin
+    password: admin123
+
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+      continue-on-error: true
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    database-platform: org.hibernate.community.dialect.SQLiteDialect
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: admin
+    password: admin123
+    virtual-host: /
+    listener:
+      simple:
+        retry:
+          enabled: true
+          initial-interval: 3008
+          max-attempts: 3
+          max-interval: 10000
+          multiplier: 2
+
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+ipr:
+  rabbitmq:
+    exchange: ipr.exchange
+    queue:
+      monitoring: ipr.monitoring.queue
+      evidence: ipr.evidence.queue
+      legal: ipr.legal.queue
+    routing:
+      monitoring: ipr.monitoring
+      evidence: ipr.evidence
+      legal: ipr.legal
+
+logging:
+  level:
+    com.ipr: DEBUG
+    org.springframework.amqp: INFO

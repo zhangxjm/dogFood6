@@ -1,0 +1,2 @@
+-- Satellite data is initialized via DataInitializer class
+-- This file is intentionally left empty to avoid encoding issues

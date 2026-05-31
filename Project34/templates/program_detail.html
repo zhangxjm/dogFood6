@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ program.name }} - 校园广播站管理系统{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>🎙️ {{ program.name }}</h2>
+    <div style="margin-bottom: 20px;">
+        <p><strong>主持人：</strong>{{ program.host }}</p>
+        <p><strong>节目类型：</strong>{{ program.get_category_display }}</p>
+        <p><strong>节目时长：</strong>{{ program.duration }} 分钟</p>
+        <p><strong>状态：</strong>
+            <span class="status-badge status-{{ program.status }}">
+                {{ program.get_status_display }}
+            </span>
+        </p>
+        <p><strong>节目简介：</strong></p>
+        <p style="margin-top: 10px; line-height: 1.8;">{{ program.description }}</p>
+    </div>
+</div>
+
+<div class="card">
+    <h2>📅 播放排班</h2>
+    {% if schedules %}
+    <table>
+        <thead>
+            <tr>
+                <th>星期</th>
+                <th>开始时间</th>
+                <th>结束时间</th>
+                <th>状态</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for schedule in schedules %}
+            <tr>
+                <td>{{ schedule.get_weekday_display }}</td>
+                <td>{{ schedule.start_time }}</td>
+                <td>{{ schedule.end_time }}</td>
+                <td>
+                    {% if schedule.is_active %}
+                    <span class="status-badge status-active">启用</span>
+                    {% else %}
+                    <span class="status-badge status-inactive">停用</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="color: #999; text-align: center; padding: 20px;">暂无排班信息</p>
+    {% endif %}
+</div>
+
+<div class="card">
+    <h2>🎵 最近播放记录</h2>
+    {% if records %}
+    <table>
+        <thead>
+            <tr>
+                <th>播放日期</th>
+                <th>开始时间</th>
+                <th>结束时间</th>
+                <th>主持人</th>
+                <th>听众人数</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in records %}
+            <tr>
+                <td>{{ record.play_date }}</td>
+                <td>{{ record.start_time }}</td>
+                <td>{{ record.end_time }}</td>
+                <td>{{ record.host }}</td>
+                <td>{{ record.listeners_count }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="color: #999; text-align: center; padding: 20px;">暂无播放记录</p>
+    {% endif %}
+</div>
+
+<div style="margin-top: 20px;">
+    <a href="{% url 'program_list' %}" class="btn btn-secondary">返回节目列表</a>
+</div>
+{% endblock %}

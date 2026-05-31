@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}注册 - 方言文化分享平台{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="auth-container">
+        <div class="auth-card">
+            <h2 class="auth-title"><i class="fas fa-user-plus"></i> 用户注册</h2>
+            <form action="{{ url_for('register') }}" method="post" class="auth-form" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="username"><i class="fas fa-user"></i> 用户名 <span class="required">*</span></label>
+                    <input type="text" id="username" name="username" placeholder="3-20个字符" required minlength="3" maxlength="20">
+                </div>
+                <div class="form-group">
+                    <label for="nickname"><i class="fas fa-id-card"></i> 昵称</label>
+                    <input type="text" id="nickname" name="nickname" placeholder="给自己取个好听的昵称">
+                </div>
+                <div class="form-group">
+                    <label for="password"><i class="fas fa-lock"></i> 密码 <span class="required">*</span></label>
+                    <input type="password" id="password" name="password" placeholder="至少6个字符" required minlength="6">
+                </div>
+                <div class="form-group">
+                    <label for="confirm_password"><i class="fas fa-lock"></i> 确认密码 <span class="required">*</span></label>
+                    <input type="password" id="confirm_password" name="confirm_password" placeholder="请再次输入密码" required minlength="6">
+                </div>
+                <div class="form-group">
+                    <label for="avatar"><i class="fas fa-camera"></i> 头像</label>
+                    <input type="file" id="avatar" name="avatar" accept="image/*">
+                </div>
+                <button type="submit" class="btn btn-primary btn-lg btn-block"><i class="fas fa-user-plus"></i> 注册</button>
+            </form>
+            <div class="auth-footer">
+                <p>已有账号？<a href="{{ url_for('login') }}">立即登录</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

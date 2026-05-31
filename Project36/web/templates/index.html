@@ -1,0 +1,116 @@
+{{template "header" .}}
+<div class="dashboard">
+    <h2>系统概览</h2>
+    <div class="stats">
+        <div class="stat-card">
+            <div class="stat-icon">🌿</div>
+            <div class="stat-info">
+                <div class="stat-label">种苗品类</div>
+                <div class="stat-value" id="category-count">0</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">📦</div>
+            <div class="stat-info">
+                <div class="stat-label">种植批次</div>
+                <div class="stat-value" id="batch-count">0</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🌱</div>
+            <div class="stat-info">
+                <div class="stat-label">累计出苗</div>
+                <div class="stat-value" id="output-count">0</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🚚</div>
+            <div class="stat-info">
+                <div class="stat-label">发货记录</div>
+                <div class="stat-value" id="shipment-count">0</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-content">
+        <div class="dashboard-section">
+            <h3>最近批次</h3>
+            <table class="data-table" id="recent-batches">
+                <thead>
+                    <tr>
+                        <th>批次号</th>
+                        <th>品类</th>
+                        <th>种植日期</th>
+                        <th>数量</th>
+                        <th>状态</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <div class="dashboard-section">
+            <h3>最近发货</h3>
+            <table class="data-table" id="recent-shipments">
+                <thead>
+                    <tr>
+                        <th>客户名称</th>
+                        <th>品类</th>
+                        <th>发货日期</th>
+                        <th>数量</th>
+                        <th>金额</th>
+                        <th>状态</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadDashboardData();
+});
+
+function loadDashboardData() {
+    Promise.all([
+        fetch('/api/categories'),
+        fetch('/api/batches'),
+        fetch('/api/outputs'),
+        fetch('/api/shipments')
+    ]).then(responses => Promise.all(responses.map(r => r.json())))
+      .then(([categories, batches, outputs, shipments]) => {
+          document.getElementById('category-count').textContent = categories.length;
+          document.getElementById('batch-count').textContent = batches.length;
+          const totalOutput = outputs.reduce((sum, o) => sum + o.quantity, 0);
+          document.getElementById('output-count').textContent = totalOutput.toLocaleString();
+          document.getElementById('shipment-count').textContent = shipments.length;
+
+          const recentBatches = batches.slice(-5).reverse();
+          const batchTbody = document.querySelector('#recent-batches tbody');
+          batchTbody.innerHTML = recentBatches.map(b => `
+              <tr>
+                  <td>${b.batch_no}</td>
+                  <td>${b.category.name}</td>
+                  <td>${formatDate(b.planting_date)}</td>
+                  <td>${b.quantity.toLocaleString()}</td>
+                  <td><span class="status-badge ${getStatusClass(b.status)}">${b.status}</span></td>
+              </tr>
+          `).join('');
+
+          const recentShipments = shipments.slice(-5).reverse();
+          const shipmentTbody = document.querySelector('#recent-shipments tbody');
+          shipmentTbody.innerHTML = recentShipments.map(s => `
+              <tr>
+                  <td>${s.customer_name}</td>
+                  <td>${s.category.name}</td>
+                  <td>${formatDate(s.ship_date)}</td>
+                  <td>${s.quantity.toLocaleString()}</td>
+                  <td>¥${s.total_amount.toLocaleString()}</td>
+                  <td><span class="status-badge ${getStatusClass(s.status)}">${s.status}</span></td>
+              </tr>
+          `).join('');
+      });
+}
+</script>
+{{template "footer" .}}

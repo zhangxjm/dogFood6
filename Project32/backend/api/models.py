@@ -1,0 +1,117 @@
+from django.db import models
+from django.utils import timezone
+
+
+class Pet(models.Model):
+    name = models.CharField(max_length=100, verbose_name='宠物名称')
+    species = models.CharField(max_length=50, verbose_name='物种')
+    breed = models.CharField(max_length=100, verbose_name='品种')
+    age = models.IntegerField(verbose_name='年龄')
+    weight = models.FloatField(verbose_name='体重(kg)')
+    created_at = models.DateTimeField(default=timezone.now, verbose_name='创建时间')
+
+    class Meta:
+        verbose_name = '宠物'
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.name
+
+
+class BehaviorType(models.Model):
+    name = models.CharField(max_length=100, verbose_name='行为名称')
+    code = models.CharField(max_length=50, unique=True, verbose_name='行为代码')
+    description = models.TextField(verbose_name='行为描述')
+    is_negative = models.BooleanField(default=False, verbose_name='是否不良行为')
+    severity_level = models.IntegerField(default=1, verbose_name='严重程度')
+
+    class Meta:
+        verbose_name = '行为类型'
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.name
+
+
+class VideoUpload(models.Model):
+    pet = models.ForeignKey(Pet, on_delete=models.CASCADE, related_name='videos', verbose_name='宠物')
+    file_name = models.CharField(max_length=255, verbose_name='文件名')
+    minio_object_name = models.CharField(max_length=255, verbose_name='MinIO对象名')
+    file_size = models.BigIntegerField(verbose_name='文件大小')
+    duration = models.FloatField(default=0, verbose_name='时长(秒)')
+    upload_time = models.DateTimeField(default=timezone.now, verbose_name='上传时间')
+    status = models.CharField(max_length=20, default='pending', verbose_name='处理状态')
+
+    class Meta:
+        verbose_name = '视频上传'
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.file_name
+
+
+class BehaviorAnalysis(models.Model):
+    video = models.ForeignKey(VideoUpload, on_delete=models.CASCADE, related_name='analyses', verbose_name='视频')
+    behavior_type = models.ForeignKey(BehaviorType, on_delete=models.CASCADE, verbose_name='行为类型')
+    confidence = models.FloatField(verbose_name='置信度')
+    start_time = models.FloatField(verbose_name='开始时间(秒)')
+    end_time = models.FloatField(verbose_name='结束时间(秒)')
+    frame_count = models.IntegerField(default=0, verbose_name='帧数')
+    analyzed_at = models.DateTimeField(default=timezone.now, verbose_name='分析时间')
+
+    class Meta:
+        verbose_name = '行为分析'
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return f'{self.video.file_name} - {self.behavior_type.name}'
+
+
+class TrainingPlan(models.Model):
+    pet = models.ForeignKey(Pet, on_delete=models.CASCADE, related_name='training_plans', verbose_name='宠物')
+    title = models.CharField(max_length=200, verbose_name='方案标题')
+    description = models.TextField(verbose_name='方案描述')
+    target_behaviors = models.ManyToManyField(BehaviorType, verbose_name='目标行为')
+    duration_days = models.IntegerField(default=30, verbose_name='持续天数')
+    difficulty_level = models.CharField(max_length=20, default='medium', verbose_name='难度等级')
+    created_at = models.DateTimeField(default=timezone.now, verbose_name='创建时间')
+    is_active = models.BooleanField(default=True, verbose_name='是否激活')
+
+    class Meta:
+        verbose_name = '训练方案'
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.title
+
+
+class TrainingStep(models.Model):
+    plan = models.ForeignKey(TrainingPlan, on_delete=models.CASCADE, related_name='steps', verbose_name='训练方案')
+    order = models.IntegerField(verbose_name='步骤顺序')
+    title = models.CharField(max_length=200, verbose_name='步骤标题')
+    instruction = models.TextField(verbose_name='操作说明')
+    expected_duration = models.IntegerField(default=5, verbose_name='预计时长(分钟)')
+    tips = models.TextField(blank=True, verbose_name='小贴士')
+
+    class Meta:
+        verbose_name = '训练步骤'
+        verbose_name_plural = verbose_name
+        ordering = ['order']
+
+    def __str__(self):
+        return f'{self.plan.title} - Step {self.order}'
+
+
+class TrainingProgress(models.Model):
+    plan = models.ForeignKey(TrainingPlan, on_delete=models.CASCADE, related_name='progress', verbose_name='训练方案')
+    step = models.ForeignKey(TrainingStep, on_delete=models.CASCADE, verbose_name='训练步骤')
+    completed_date = models.DateTimeField(default=timezone.now, verbose_name='完成日期')
+    notes = models.TextField(blank=True, verbose_name='备注')
+    success_rate = models.FloatField(default=0, verbose_name='成功率')
+
+    class Meta:
+        verbose_name = '训练进度'
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return f'{self.plan.title} - {self.step.title}'
