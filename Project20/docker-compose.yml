@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  elasticsearch:
+    image: elasticsearch:8.11.0
+    container_name: rs-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    networks:
+      - rs-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: rs-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/uploads:/app/uploads
+      - ./backend/thumbnails:/app/thumbnails
+      - ./backend/change_masks:/app/change_masks
+      - ./backend/remote_sensing.db:/app/remote_sensing.db
+    environment:
+      - ELASTICSEARCH_HOST=http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+    networks:
+      - rs-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: rs-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - rs-network
+
+volumes:
+  es_data:
+
+networks:
+  rs-network:
+    driver: bridge

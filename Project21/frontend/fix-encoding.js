@@ -1,0 +1,16 @@
+﻿﻿﻿﻿const fs = require('fs');
+let content = fs.readFileSync('src/pages/LiveRoom.tsx', 'utf8');
+content = content.replace(/直播已开\?+/g, '直播已开始');
+content = content.replace(/直播已结\?+/g, '直播已结束');
+content = content.replace(/无法访问摄像\?+麦克风/g, '无法访问摄像头和麦克风');
+content = content.replace(/退出直\?+/g, '退出直播');
+content = content.replace(/等待直播开\?+/g, '等待直播开始');
+content = content.replace(/请加入直\?+/g, '请加入直播');
+content = content.replace(/开启视\?+/g, '开启视频');
+content = content.replace(/开始直\?+/g, '开始直播');
+content = content.replace(/发送消\?+/g, '发送消息');
+content = content.replace(/发\?\s/g, '发送 ');
+content = content.replace(/我的摄像\?+/g, '我的摄像头');
+content = content.replace(/摄像头未开\?+/g, '摄像头未开启');
+fs.writeFileSync('src/pages/LiveRoom.tsx', content, 'utf8');
+console.log('修复完成');

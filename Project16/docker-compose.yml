@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.backend
+    container_name: pet-med-ai-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - ./media:/app/media
+      - ./data:/app/data
+    environment:
+      - DJANGO_SETTINGS_MODULE=pet_med_ai.settings
+      - DEBUG=True
+    networks:
+      - pet-med-ai-network
+
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.frontend
+    container_name: pet-med-ai-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - REACT_APP_API_URL=http://localhost:8000/api
+    depends_on:
+      - backend
+    networks:
+      - pet-med-ai-network
+
+  nginx:
+    image: nginx:alpine
+    container_name: pet-med-ai-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./backend/static:/var/www/static
+      - ./media:/var/www/media
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - pet-med-ai-network
+
+networks:
+  pet-med-ai-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

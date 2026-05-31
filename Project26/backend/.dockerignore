@@ -1,0 +1,9 @@
+main
+main.exe
+*.db
+*.log
+.git
+.gitignore
+.env
+Dockerfile
+.dockerignore

@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>错题整理归档系统</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/element-plus@2.4.4/dist/index.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        #app {
+            min-height: 100vh;
+        }
+        .main-container {
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .header {
+            background: white;
+            border-radius: 12px;
+            padding: 20px 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 {
+            color: #333;
+            font-size: 24px;
+            margin: 0;
+        }
+        .header .subtitle {
+            color: #666;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+        .nav-tabs {
+            background: white;
+            border-radius: 12px;
+            padding: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        .content-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        .stat-card.green {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            box-shadow: 0 4px 15px rgba(17, 153, 142, 0.4);
+        }
+        .stat-card.orange {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+        }
+        .stat-card.blue {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+        }
+        .stat-card .number {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        .stat-card .label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        .question-card {
+            border: 2px solid #e4e7ed;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+            background: #fafafa;
+        }
+        .question-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+        }
+        .question-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #303133;
+            margin-bottom: 10px;
+        }
+        .question-content {
+            color: #606266;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            margin-bottom: 10px;
+        }
+        .question-meta {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        .tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .tag-subject {
+            background: #ecf5ff;
+            color: #409eff;
+        }
+        .tag-category {
+            background: #f0f9eb;
+            color: #67c23a;
+        }
+        .tag-kp {
+            background: #fdf6ec;
+            color: #e6a23c;
+        }
+        .tag-mastery-0 {
+            background: #fef0f0;
+            color: #f56c6c;
+        }
+        .tag-mastery-1 {
+            background: #fdf6ec;
+            color: #e6a23c;
+        }
+        .tag-mastery-2 {
+            background: #ecf5ff;
+            color: #409eff;
+        }
+        .tag-mastery-3 {
+            background: #f0f9eb;
+            color: #67c23a;
+        }
+        .form-section {
+            margin-bottom: 20px;
+        }
+        .form-label {
+            font-weight: 600;
+            color: #303133;
+            margin-bottom: 8px;
+        }
+        .practice-area {
+            text-align: center;
+            padding: 30px;
+        }
+        .answer-area {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f5f7fa;
+            border-radius: 10px;
+            text-align: left;
+        }
+        .review-item {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            background: #f5f7fa;
+            border-left: 4px solid #667eea;
+        }
+        .review-item h4 {
+            margin-bottom: 10px;
+            color: #303133;
+        }
+        .mastery-bar {
+            height: 8px;
+            border-radius: 4px;
+            background: #e4e7ed;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        .mastery-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+        .el-tabs__item {
+            font-size: 15px !important;
+        }
+        .el-tab-pane {
+            padding: 20px 0;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <div class="main-container">
+        <div class="header">
+            <div>
+                <h1>📚 错题整理归档系统</h1>
+                <div class="subtitle">记录错题，分析原因，巩固提高</div>
+            </div>
+            <el-tag type="success" effect="dark">系统运行中</el-tag>
+        </div>
+
+        <div class="nav-tabs">
+            <el-tabs v-model="activeTab" @tab-change="handleTabChange">
+                <el-tab-pane label="📊 数据概览" name="overview"></el-tab-pane>
+                <el-tab-pane label="✍️ 录入错题" name="input"></el-tab-pane>
+                <el-tab-pane label="📋 错题管理" name="manage"></el-tab-pane>
+                <el-tab-pane label="🔄 分类复盘" name="review"></el-tab-pane>
+                <el-tab-pane label="🎯 错题练习" name="practice"></el-tab-pane>
+            </el-tabs>
+        </div>
+
+        <div class="content-card">
+            <div v-if="activeTab === 'overview'">
+                <el-row :gutter="20">
+                    <el-col :span="6">
+                        <div class="stat-card">
+                            <div class="number">{{ statistics.total_questions }}</div>
+                            <div class="label">错题总数</div>
+                        </div>
+                    </el-col>
+                    <el-col :span="6">
+                        <div class="stat-card green">
+                            <div class="number">{{ statistics.total_subjects }}</div>
+                            <div class="label">涉及科目</div>
+                        </div>
+                    </el-col>
+                    <el-col :span="6">
+                        <div class="stat-card orange">
+                            <div class="number">{{ statistics.total_practices }}</div>
+                            <div class="label">练习次数</div>
+                        </div>
+                    </el-col>
+                    <el-col :span="6">
+                        <div class="stat-card blue">
+                            <div class="number">{{ masteryRate }}%</div>
+                            <div class="label">掌握率</div>
+                        </div>
+                    </el-col>
+                </el-row>
+
+                <el-divider content-position="left">掌握情况分布</el-divider>
+
+                <el-row :gutter="20">
+                    <el-col :span="6">
+                        <el-card shadow="hover">
+                            <div style="text-align: center;">
+                                <div style="font-size: 24px; color: #f56c6c;">{{ statistics.mastery_0 }}</div>
+                                <div style="color: #909399;">未掌握</div>
+                            </div>
+                        </el-card>
+                    </el-col>
+                    <el-col :span="6">
+                        <el-card shadow="hover">
+                            <div style="text-align: center;">
+                                <div style="font-size: 24px; color: #e6a23c;">{{ statistics.mastery_1 }}</div>
+                                <div style="color: #909399;">初步掌握</div>
+                            </div>
+                        </el-card>
+                    </el-col>
+                    <el-col :span="6">
+                        <el-card shadow="hover">
+                            <div style="text-align: center;">
+                                <div style="font-size: 24px; color: #409eff;">{{ statistics.mastery_2 }}</div>
+                                <div style="color: #909399;">基本掌握</div>
+                            </div>
+                        </el-card>
+                    </el-col>
+                    <el-col :span="6">
+                        <el-card shadow="hover">
+                            <div style="text-align: center;">
+                                <div style="font-size: 24px; color: #67c23a;">{{ statistics.mastery_3 }}</div>
+                                <div style="color: #909399;">完全掌握</div>
+                            </div>
+                        </el-card>
+                    </el-col>
+                </el-row>
+            </div>
+
+            <div v-if="activeTab === 'input'">
+                <el-form :model="questionForm" label-width="100px" ref="questionFormRef">
+                    <el-row :gutter="20">
+                        <el-col :span="12">
+                            <el-form-item label="选择科目" prop="subject_id" required>
+                                <el-select v-model="questionForm.subject_id" placeholder="请选择科目" style="width: 100%" @change="loadKnowledgePoints">
+                                    <el-option v-for="subject in subjects" :key="subject.id" :label="subject.name" :value="subject.id"></el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="考点" prop="knowledge_point_id">
+                                <el-select v-model="questionForm.knowledge_point_id" placeholder="请选择考点" style="width: 100%" clearable>
+                                    <el-option v-for="kp in knowledgePoints" :key="kp.id" :label="kp.name" :value="kp.id"></el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row :gutter="20">
+                        <el-col :span="12">
+                            <el-form-item label="错误类型" prop="category_id" required>
+                                <el-select v-model="questionForm.category_id" placeholder="请选择错误类型" style="width: 100%">
+                                    <el-option v-for="cat in categories" :key="cat.id" :label="cat.name" :value="cat.id"></el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="添加考点" prop="newKp">
+                                <el-input v-model="newKpName" placeholder="输入新考点名称后点击添加" style="width: 70%; margin-right: 10px;"></el-input>
+                                <el-button type="primary" @click="addKnowledgePoint" :disabled="!newKpName || !questionForm.subject_id">添加</el-button>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-form-item label="题目标题" prop="title" required>
+                        <el-input v-model="questionForm.title" placeholder="输入题目标题（简要描述）"></el-input>
+                    </el-form-item>
+                    <el-form-item label="题目内容" prop="content" required>
+                        <el-input v-model="questionForm.content" type="textarea" :rows="4" placeholder="输入完整的题目内容"></el-input>
+                    </el-form-item>
+                    <el-form-item label="正确答案" prop="answer" required>
+                        <el-input v-model="questionForm.answer" type="textarea" :rows="3" placeholder="输入正确答案"></el-input>
+                    </el-form-item>
+                    <el-form-item label="题目解析" prop="analysis">
+                        <el-input v-model="questionForm.analysis" type="textarea" :rows="3" placeholder="输入题目解析（可选）"></el-input>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @click="submitQuestion" :loading="submitting">保存错题</el-button>
+                        <el-button @click="resetForm">重置</el-button>
+                    </el-form-item>
+                </el-form>
+            </div>
+
+            <div v-if="activeTab === 'manage'">
+                <el-row :gutter="10" style="margin-bottom: 20px;">
+                    <el-col :span="6">
+                        <el-select v-model="filterSubject" placeholder="按科目筛选" clearable style="width: 100%" @change="loadQuestions">
+                            <el-option v-for="subject in subjects" :key="subject.id" :label="subject.name" :value="subject.id"></el-option>
+                        </el-select>
+                    </el-col>
+                    <el-col :span="6">
+                        <el-select v-model="filterCategory" placeholder="按类型筛选" clearable style="width: 100%" @change="loadQuestions">
+                            <el-option v-for="cat in categories" :key="cat.id" :label="cat.name" :value="cat.id"></el-option>
+                        </el-select>
+                    </el-col>
+                    <el-col :span="6">
+                        <el-switch v-model="filterNeedPractice" active-text="待练习" inactive-text="全部" @change="loadQuestions"></el-switch>
+                    </el-col>
+                    <el-col :span="6">
+                        <el-input v-model="searchKeyword" placeholder="搜索题目" @input="searchQuestions" clearable></el-input>
+                    </el-col>
+                </el-row>
+
+                <div v-if="questions.length === 0">
+                    <el-empty description="暂无错题数据"></el-empty>
+                </div>
+
+                <div v-for="question in questions" :key="question.id" class="question-card">
+                    <div class="question-title">{{ question.title }}</div>
+                    <div class="question-content">{{ question.content }}</div>
+                    <div class="question-meta">
+                        <span class="tag tag-subject">{{ getSubjectName(question.subject_id) }}</span>
+                        <span class="tag tag-category">{{ getCategoryName(question.category_id) }}</span>
+                        <span class="tag tag-kp" v-if="question.knowledge_point">{{ question.knowledge_point.name }}</span>
+                        <span :class="['tag', 'tag-mastery-' + question.mastery_level]">{{ getMasteryText(question.mastery_level) }}</span>
+                        <span class="tag" style="background: #f4f4f5; color: #909399;">错误次数: {{ question.error_count }}</span>
+                    </div>
+                    <div style="margin-top: 15px;">
+                        <el-button size="small" @click="showDetail(question)">查看详情</el-button>
+                        <el-button size="small" type="primary" @click="editQuestion(question)">编辑</el-button>
+                        <el-button size="small" type="danger" @click="deleteQuestion(question)">删除</el-button>
+                    </div>
+                </div>
+            </div>
+
+            <div v-if="activeTab === 'review'">
+                <el-tabs v-model="reviewTab">
+                    <el-tab-pane label="按科目复盘" name="subject">
+                        <div v-for="item in reviewBySubject" :key="item.subject_id" class="review-item">
+                            <h4>{{ item.subject_name }} (共{{ item.question_count }}题)</h4>
+                            <div v-for="q in item.questions" :key="q.id" style="padding: 8px 0; border-bottom: 1px solid #e4e7ed;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span>{{ q.title }}</span>
+                                    <div>
+                                        <el-tag size="small" :type="getMasteryTagType(q.mastery_level)">{{ getMasteryText(q.mastery_level) }}</el-tag>
+                                        <span style="margin-left: 10px; color: #909399; font-size: 12px;">错误{{ q.error_count }}次</span>
+                                    </div>
+                                </div>
+                                <div class="mastery-bar">
+                                    <div class="mastery-bar-fill" :style="{width: (q.mastery_level / 3 * 100) + '%', background: getMasteryColor(q.mastery_level)}"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </el-tab-pane>
+                    <el-tab-pane label="按类型复盘" name="category">
+                        <div v-for="item in reviewByCategory" :key="item.category_id" class="review-item">
+                            <h4>{{ item.category_name }} (共{{ item.question_count }}题)</h4>
+                            <div v-for="q in item.questions" :key="q.id" style="padding: 8px 0; border-bottom: 1px solid #e4e7ed;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span>{{ q.title }}</span>
+                                    <div>
+                                        <el-tag size="small" :type="getMasteryTagType(q.mastery_level)">{{ getMasteryText(q.mastery_level) }}</el-tag>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </el-tab-pane>
+                </el-tabs>
+            </div>
+
+            <div v-if="activeTab === 'practice'">
+                <div v-if="!practiceQuestion" class="practice-area">
+                    <el-empty description="暂无需要练习的题目">
+                        <el-button type="primary" @click="getPracticeQuestion">开始练习</el-button>
+                    </el-empty>
+                </div>
+                <div v-else>
+                    <el-select v-model="practiceSubject" placeholder="选择科目练习" clearable style="width: 200px; margin-bottom: 20px;" @change="getPracticeQuestion">
+                        <el-option v-for="subject in subjects" :key="subject.id" :label="subject.name" :value="subject.id"></el-option>
+                    </el-select>
+
+                    <div class="question-card">
+                        <div class="question-title">{{ practiceQuestion.title }}</div>
+                        <div class="question-content">{{ practiceQuestion.content }}</div>
+                        <div class="question-meta">
+                            <span class="tag tag-subject">{{ getSubjectName(practiceQuestion.subject_id) }}</span>
+                            <span class="tag tag-category">{{ getCategoryName(practiceQuestion.category_id) }}</span>
+                        </div>
+                    </div>
+
+                    <el-form label-width="100px" style="margin-top: 20px;">
+                        <el-form-item label="你的答案">
+                            <el-input v-model="userAnswer" type="textarea" :rows="4" placeholder="请输入你的答案"></el-input>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-button type="primary" @click="showAnswer = true" :disabled="showAnswer">提交答案</el-button>
+                            <el-button @click="getPracticeQuestion">下一题</el-button>
+                        </el-form-item>
+                    </el-form>
+
+                    <div v-if="showAnswer" class="answer-area">
+                        <h4 style="color: #303133; margin-bottom: 10px;">📝 正确答案与解析</h4>
+                        <div style="margin-bottom: 15px;">
+                            <strong>正确答案：</strong>
+                            <div style="white-space: pre-wrap; color: #606266; margin-top: 5px;">{{ practiceQuestion.answer }}</div>
+                        </div>
+                        <div v-if="practiceQuestion.analysis" style="margin-bottom: 15px;">
+                            <strong>题目解析：</strong>
+                            <div style="white-space: pre-wrap; color: #606266; margin-top: 5px;">{{ practiceQuestion.analysis }}</div>
+                        </div>
+                        <div style="margin-top: 20px;">
+                            <strong>你答对了吗？</strong>
+                            <div style="margin-top: 10px;">
+                                <el-button type="success" @click="submitPractice(true)">✅ 答对了</el-button>
+                                <el-button type="danger" @click="submitPractice(false)">❌ 答错了</el-button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <el-dialog v-model="detailDialogVisible" title="错题详情" width="600px">
+        <div v-if="currentQuestion">
+            <el-descriptions :column="1" border>
+                <el-descriptions-item label="题目标题">{{ currentQuestion.title }}</el-descriptions-item>
+                <el-descriptions-item label="科目">{{ getSubjectName(currentQuestion.subject_id) }}</el-descriptions-item>
+                <el-descriptions-item label="考点">{{ currentQuestion.knowledge_point?.name || '无' }}</el-descriptions-item>
+                <el-descriptions-item label="错误类型">{{ getCategoryName(currentQuestion.category_id) }}</el-descriptions-item>
+                <el-descriptions-item label="掌握程度">{{ getMasteryText(currentQuestion.mastery_level) }}</el-descriptions-item>
+                <el-descriptions-item label="错误次数">{{ currentQuestion.error_count }}</el-descriptions-item>
+            </el-descriptions>
+            <el-divider>题目内容</el-divider>
+            <div style="white-space: pre-wrap; line-height: 1.8;">{{ currentQuestion.content }}</div>
+            <el-divider>正确答案</el-divider>
+            <div style="white-space: pre-wrap; line-height: 1.8;">{{ currentQuestion.answer }}</div>
+            <el-divider v-if="currentQuestion.analysis">题目解析</el-divider>
+            <div v-if="currentQuestion.analysis" style="white-space: pre-wrap; line-height: 1.8;">{{ currentQuestion.analysis }}</div>
+        </div>
+    </el-dialog>
+
+    <el-dialog v-model="editDialogVisible" title="编辑错题" width="600px">
+        <el-form :model="editForm" label-width="100px" v-if="currentQuestion">
+            <el-form-item label="题目标题">
+                <el-input v-model="editForm.title"></el-input>
+            </el-form-item>
+            <el-form-item label="科目">
+                <el-select v-model="editForm.subject_id" style="width: 100%">
+                    <el-option v-for="subject in subjects" :key="subject.id" :label="subject.name" :value="subject.id"></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="考点">
+                <el-select v-model="editForm.knowledge_point_id" style="width: 100%" clearable>
+                    <el-option v-for="kp in knowledgePoints" :key="kp.id" :label="kp.name" :value="kp.id"></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="错误类型">
+                <el-select v-model="editForm.category_id" style="width: 100%">
+                    <el-option v-for="cat in categories" :key="cat.id" :label="cat.name" :value="cat.id"></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="题目内容">
+                <el-input v-model="editForm.content" type="textarea" :rows="4"></el-input>
+            </el-form-item>
+            <el-form-item label="正确答案">
+                <el-input v-model="editForm.answer" type="textarea" :rows="3"></el-input>
+            </el-form-item>
+            <el-form-item label="题目解析">
+                <el-input v-model="editForm.analysis" type="textarea" :rows="3"></el-input>
+            </el-form-item>
+        </el-form>
+        <template #footer>
+            <el-button @click="editDialogVisible = false">取消</el-button>
+            <el-button type="primary" @click="saveEdit">保存</el-button>
+        </template>
+    </el-dialog>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@3.4.0/dist/vue.global.prod.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/element-plus@2.4.4/dist/index.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios@1.6.2/dist/axios.min.js"></script>
+<script>
+    const { createApp, ref, onMounted, computed } = Vue;
+
+    const app = createApp({
+        setup() {
+            const API_BASE = '/api';
+
+            const activeTab = ref('overview');
+            const subjects = ref([]);
+            const knowledgePoints = ref([]);
+            const categories = ref([]);
+            const questions = ref([]);
+            const statistics = ref({
+                total_questions: 0,
+                total_subjects: 0,
+                total_practices: 0,
+                mastery_0: 0,
+                mastery_1: 0,
+                mastery_2: 0,
+                mastery_3: 0
+            });
+
+            const questionForm = ref({
+                subject_id: null,
+                knowledge_point_id: null,
+                category_id: null,
+                title: '',
+                content: '',
+                answer: '',
+                analysis: ''
+            });
+            const submitting = ref(false);
+            const newKpName = ref('');
+
+            const filterSubject = ref(null);
+            const filterCategory = ref(null);
+            const filterNeedPractice = ref(false);
+            const searchKeyword = ref('');
+
+            const detailDialogVisible = ref(false);
+            const editDialogVisible = ref(false);
+            const currentQuestion = ref(null);
+            const editForm = ref({});
+
+            const reviewTab = ref('subject');
+            const reviewBySubject = ref([]);
+            const reviewByCategory = ref([]);
+
+            const practiceQuestion = ref(null);
+            const practiceSubject = ref(null);
+            const userAnswer = ref('');
+            const showAnswer = ref(false);
+
+            const masteryRate = computed(() => {
+                const total = statistics.value.total_questions;
+                if (total === 0) return 0;
+                const mastered = statistics.value.mastery_2 + statistics.value.mastery_3;
+                return Math.round((mastered / total) * 100);
+            });
+
+            const loadSubjects = async () => {
+                try {
+                    const res = await axios.get(`${API_BASE}/subjects`);
+                    subjects.value = res.data;
+                } catch (e) {
+                    console.error('加载科目失败', e);
+                }
+            };
+
+            const loadKnowledgePoints = async (subjectId = null) => {
+                try {
+                    const params = subjectId ? { subject_id: subjectId } : {};
+                    const res = await axios.get(`${API_BASE}/knowledge-points`, { params });
+                    knowledgePoints.value = res.data;
+                } catch (e) {
+                    console.error('加载考点失败', e);
+                }
+            };
+
+            const loadCategories = async () => {
+                try {
+                    const res = await axios.get(`${API_BASE}/categories`);
+                    categories.value = res.data;
+                } catch (e) {
+                    console.error('加载分类失败', e);
+                }
+            };
+
+            const loadQuestions = async () => {
+                try {
+                    const params = {};
+                    if (filterSubject.value) params.subject_id = filterSubject.value;
+                    if (filterCategory.value) params.category_id = filterCategory.value;
+                    if (filterNeedPractice.value) params.need_practice = true;
+                    const res = await axios.get(`${API_BASE}/questions`, { params });
+                    questions.value = res.data;
+                } catch (e) {
+                    console.error('加载题目失败', e);
+                }
+            };
+
+            const loadStatistics = async () => {
+                try {
+                    const res = await axios.get(`${API_BASE}/statistics`);
+                    statistics.value = res.data;
+                } catch (e) {
+                    console.error('加载统计数据失败', e);
+                }
+            };
+
+            const loadReviewData = async () => {
+                try {
+                    const [subjectRes, categoryRes] = await Promise.all([
+                        axios.get(`${API_BASE}/review/by-subject`),
+                        axios.get(`${API_BASE}/review/by-category`)
+                    ]);
+                    reviewBySubject.value = subjectRes.data;
+                    reviewByCategory.value = categoryRes.data;
+                } catch (e) {
+                    console.error('加载复盘数据失败', e);
+                }
+            };
+
+            const getPracticeQuestion = async () => {
+                try {
+                    const params = {};
+                    if (practiceSubject.value) params.subject_id = practiceSubject.value;
+                    const res = await axios.get(`${API_BASE}/practice/random`, { params });
+                    practiceQuestion.value = res.data;
+                    userAnswer.value = '';
+                    showAnswer.value = false;
+                } catch (e) {
+                    console.error('获取练习题失败', e);
+                }
+            };
+
+            const submitQuestion = async () => {
+                if (!questionForm.value.subject_id || !questionForm.value.category_id || !questionForm.value.title || !questionForm.value.content || !questionForm.value.answer) {
+                    ElementPlus.ElMessage.warning('请填写必填项');
+                    return;
+                }
+                submitting.value = true;
+                try {
+                    await axios.post(`${API_BASE}/questions`, questionForm.value);
+                    ElementPlus.ElMessage.success('错题保存成功！');
+                    resetForm();
+                    loadStatistics();
+                } catch (e) {
+                    ElementPlus.ElMessage.error('保存失败');
+                    console.error(e);
+                } finally {
+                    submitting.value = false;
+                }
+            };
+
+            const addKnowledgePoint = async () => {
+                if (!newKpName.value || !questionForm.value.subject_id) return;
+                try {
+                    await axios.post(`${API_BASE}/knowledge-points`, {
+                        name: newKpName.value,
+                        subject_id: questionForm.value.subject_id
+                    });
+                    ElementPlus.ElMessage.success('考点添加成功');
+                    newKpName.value = '';
+                    loadKnowledgePoints(questionForm.value.subject_id);
+                } catch (e) {
+                    ElementPlus.ElMessage.error('添加考点失败');
+                    console.error(e);
+                }
+            };
+
+            const resetForm = () => {
+                questionForm.value = {
+                    subject_id: null,
+                    knowledge_point_id: null,
+                    category_id: null,
+                    title: '',
+                    content: '',
+                    answer: '',
+                    analysis: ''
+                };
+            };
+
+            const getSubjectName = (id) => {
+                const subject = subjects.value.find(s => s.id === id);
+                return subject ? subject.name : '';
+            };
+
+            const getCategoryName = (id) => {
+                const cat = categories.value.find(c => c.id === id);
+                return cat ? cat.name : '';
+            };
+
+            const getMasteryText = (level) => {
+                const texts = ['未掌握', '初步掌握', '基本掌握', '完全掌握'];
+                return texts[level] || '未掌握';
+            };
+
+            const getMasteryTagType = (level) => {
+                const types = ['danger', 'warning', 'primary', 'success'];
+                return types[level] || 'info';
+            };
+
+            const getMasteryColor = (level) => {
+                const colors = ['#f56c6c', '#e6a23c', '#409eff', '#67c23a'];
+                return colors[level] || '#909399';
+            };
+
+            const showDetail = (question) => {
+                currentQuestion.value = question;
+                detailDialogVisible.value = true;
+            };
+
+            const editQuestion = (question) => {
+                currentQuestion.value = question;
+                editForm.value = { ...question };
+                editDialogVisible.value = true;
+            };
+
+            const saveEdit = async () => {
+                try {
+                    await axios.put(`${API_BASE}/questions/${currentQuestion.value.id}`, editForm.value);
+                    ElementPlus.ElMessage.success('保存成功');
+                    editDialogVisible.value = false;
+                    loadQuestions();
+                } catch (e) {
+                    ElementPlus.ElMessage.error('保存失败');
+                    console.error(e);
+                }
+            };
+
+            const deleteQuestion = async (question) => {
+                try {
+                    await ElementPlus.ElMessageBox.confirm('确定要删除这道错题吗？', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    });
+                    await axios.delete(`${API_BASE}/questions/${question.id}`);
+                    ElementPlus.ElMessage.success('删除成功');
+                    loadQuestions();
+                    loadStatistics();
+                } catch (e) {
+                    if (e !== 'cancel') {
+                        ElementPlus.ElMessage.error('删除失败');
+                        console.error(e);
+                    }
+                }
+            };
+
+            const searchQuestions = () => {
+                if (!searchKeyword.value) {
+                    loadQuestions();
+                    return;
+                }
+                const keyword = searchKeyword.value.toLowerCase();
+                questions.value = questions.value.filter(q =>
+                    q.title.toLowerCase().includes(keyword) ||
+                    q.content.toLowerCase().includes(keyword)
+                );
+            };
+
+            const submitPractice = async (isCorrect) => {
+                try {
+                    await axios.post(`${API_BASE}/practice/submit`, {
+                        question_id: practiceQuestion.value.id,
+                        is_correct: isCorrect ? 1 : 0,
+                        user_answer: userAnswer.value
+                    });
+                    ElementPlus.ElMessage.success(isCorrect ? '太棒了！继续保持！' : '没关系，多加练习！');
+                    getPracticeQuestion();
+                    loadStatistics();
+                } catch (e) {
+                    ElementPlus.ElMessage.error('提交失败');
+                    console.error(e);
+                }
+            };
+
+            const handleTabChange = (tab) => {
+                if (tab === 'overview') {
+                    loadStatistics();
+                } else if (tab === 'manage') {
+                    loadQuestions();
+                } else if (tab === 'review') {
+                    loadReviewData();
+                } else if (tab === 'practice') {
+                    getPracticeQuestion();
+                }
+            };
+
+            onMounted(async () => {
+                await Promise.all([
+                    loadSubjects(),
+                    loadCategories(),
+                    loadKnowledgePoints(),
+                    loadStatistics()
+                ]);
+            });
+
+            return {
+                activeTab,
+                subjects,
+                knowledgePoints,
+                categories,
+                questions,
+                statistics,
+                questionForm,
+                submitting,
+                newKpName,
+                filterSubject,
+                filterCategory,
+                filterNeedPractice,
+                searchKeyword,
+                detailDialogVisible,
+                editDialogVisible,
+                currentQuestion,
+                editForm,
+                reviewTab,
+                reviewBySubject,
+                reviewByCategory,
+                practiceQuestion,
+                practiceSubject,
+                userAnswer,
+                showAnswer,
+                masteryRate,
+                loadKnowledgePoints,
+                submitQuestion,
+                addKnowledgePoint,
+                resetForm,
+                getSubjectName,
+                getCategoryName,
+                getMasteryText,
+                getMasteryTagType,
+                getMasteryColor,
+                showDetail,
+                editQuestion,
+                saveEdit,
+                deleteQuestion,
+                searchQuestions,
+                loadQuestions,
+                getPracticeQuestion,
+                submitPractice,
+                handleTabChange
+            };
+        }
+    });
+
+    app.use(ElementPlus);
+    app.mount('#app');
+</script>
+</body>
+</html>

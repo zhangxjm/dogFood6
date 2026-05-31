@@ -1,0 +1,62 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: eldercare-backend
+  datasource:
+    url: jdbc:sqlite:eldercare.db
+    driver-class-name: org.sqlite.JDBC
+    username: admin
+    password: admin
+  jpa:
+    database-platform: org.hibernate.community.dialect.SQLiteDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+logging:
+  level:
+    com.eldercare: DEBUG
+    org.springframework.web: INFO
+    org.hibernate.SQL: DEBUG
+
+eldercare:
+  websocket:
+    topic-prefix: /topic
+    app-prefix: /app
+  bluetooth:
+    scan-interval: 5000
+    data-interval: 10000
+  health:
+    heart-rate:
+      min-normal: 60
+      max-normal: 100
+      critical-low: 40
+      critical-high: 140
+    blood-oxygen:
+      min-normal: 95
+      critical-low: 90
+    temperature:
+      min-normal: 36.0
+      max-normal: 37.5
+      critical-low: 35.0
+      critical-high: 39.0
+  desensitization:
+    name-mask: true
+    phone-mask: true
+    id-card-mask: true
+    address-mask: true

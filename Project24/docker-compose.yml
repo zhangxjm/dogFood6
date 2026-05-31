@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  mqtt:
+    image: eclipse-mosquitto:2.0
+    container_name: pet-feeder-mqtt
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./docker/mosquitto/config:/mosquitto/config
+      - ./docker/mosquitto/data:/mosquitto/data
+      - ./docker/mosquitto/log:/mosquitto/log
+    restart: unless-stopped
+
+  influxdb:
+    image: influxdb:2.7
+    container_name: pet-feeder-influxdb
+    ports:
+      - "8086:8086"
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=admin123456
+      - DOCKER_INFLUXDB_INIT_ORG=pet-feeder
+      - DOCKER_INFLUXDB_INIT_BUCKET=pet-data
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=pet-feeder-token-123456
+    volumes:
+      - ./docker/influxdb/data:/var/lib/influxdb2
+      - ./docker/influxdb/config:/etc/influxdb2
+    restart: unless-stopped
+
+  backend:
+    build: ./backend
+    container_name: pet-feeder-backend
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=development
+      - MQTT_HOST=mqtt
+      - MQTT_PORT=1883
+      - INFLUXDB_HOST=influxdb
+      - INFLUXDB_PORT=8086
+      - INFLUXDB_TOKEN=pet-feeder-token-123456
+      - INFLUXDB_ORG=pet-feeder
+      - INFLUXDB_BUCKET=pet-data
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - mqtt
+      - influxdb
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    container_name: pet-feeder-frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    restart: unless-stopped

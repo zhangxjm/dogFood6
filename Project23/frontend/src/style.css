@@ -1,0 +1,88 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: #f5f7fa;
+}
+
+#app {
+  min-height: 100vh;
+}
+
+.common-card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.page-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #303133;
+}
+
+.status-tag {
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.status-pending {
+  background-color: #fdf6ec;
+  color: #e6a23c;
+}
+
+.status-sorted {
+  background-color: #ecf5ff;
+  color: #409eff;
+}
+
+.status-routed {
+  background-color: #f0f9eb;
+  color: #67c23a;
+}
+
+.status-shipped {
+  background-color: #e6a23c;
+  color: #fff;
+}
+
+.status-delivered {
+  background-color: #67c23a;
+  color: #fff;
+}
+
+.status-in_transit {
+  background-color: #409eff;
+  color: #fff;
+}
+
+.status-out_for_delivery {
+  background-color: #909399;
+  color: #fff;
+}
+
+.map-container {
+  width: 100%;
+  height: 400px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 16px;
+}

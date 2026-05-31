@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>粮油干货进销存管理系统</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>粮油干货进销存管理系统</h1>
+            <nav>
+                <button class="nav-btn active" data-page="dashboard">首页概览</button>
+                <button class="nav-btn" data-page="purchase">进货登记</button>
+                <button class="nav-btn" data-page="sale">零售售卖</button>
+                <button class="nav-btn" data-page="inventory">库存管理</button>
+                <button class="nav-btn" data-page="warning">库存预警</button>
+                <button class="nav-btn" data-page="stats">营收统计</button>
+            </nav>
+        </header>
+
+        <main>
+            <div id="dashboard" class="page active">
+                <h2>首页概览</h2>
+                <div class="stats-cards">
+                    <div class="stat-card">
+                        <div class="stat-title">商品总数</div>
+                        <div class="stat-value" id="totalProducts">0</div>
+                    </div>
+                    <div class="stat-card warning">
+                        <div class="stat-title">库存预警</div>
+                        <div class="stat-value" id="lowStockCount">0</div>
+                    </div>
+                    <div class="stat-card success">
+                        <div class="stat-title">总销售额</div>
+                        <div class="stat-value" id="totalSales">¥0.00</div>
+                    </div>
+                    <div class="stat-card info">
+                        <div class="stat-title">总订单数</div>
+                        <div class="stat-value" id="totalSaleCount">0</div>
+                    </div>
+                </div>
+                <div class="recent-section">
+                    <h3>最近销售记录</h3>
+                    <table class="data-table" id="recentSalesTable">
+                        <thead>
+                            <tr>
+                                <th>商品名称</th>
+                                <th>数量</th>
+                                <th>单价</th>
+                                <th>金额</th>
+                                <th>时间</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="purchase" class="page">
+                <h2>进货登记</h2>
+                <div class="form-section">
+                    <h3>新增进货</h3>
+                    <form id="purchaseForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>选择商品</label>
+                                <select id="purchaseProduct" required></select>
+                            </div>
+                            <div class="form-group">
+                                <label>进货数量</label>
+                                <input type="number" id="purchaseQuantity" step="0.01" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label>进货单价 (元)</label>
+                                <input type="number" id="purchasePrice" step="0.01" min="0" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>供应商</label>
+                                <input type="text" id="purchaseSupplier">
+                            </div>
+                            <div class="form-group">
+                                <label>操作员</label>
+                                <input type="text" id="purchaseOperator" value="管理员">
+                            </div>
+                            <div class="form-group">
+                                <label>备注</label>
+                                <input type="text" id="purchaseRemark">
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <div class="total-amount">总金额: <span id="purchaseTotal">¥0.00</span></div>
+                            <button type="submit" class="btn btn-primary">确认进货</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="list-section">
+                    <h3>进货记录</h3>
+                    <div class="filter-row">
+                        <label>开始日期: <input type="date" id="purchaseStartDate"></label>
+                        <label>结束日期: <input type="date" id="purchaseEndDate"></label>
+                        <button class="btn btn-secondary" onclick="loadPurchases()">查询</button>
+                    </div>
+                    <table class="data-table" id="purchaseTable">
+                        <thead>
+                            <tr>
+                                <th>商品名称</th>
+                                <th>数量</th>
+                                <th>单价</th>
+                                <th>总金额</th>
+                                <th>供应商</th>
+                                <th>操作员</th>
+                                <th>时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="sale" class="page">
+                <h2>零售售卖</h2>
+                <div class="form-section">
+                    <h3>新增销售</h3>
+                    <form id="saleForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>选择商品</label>
+                                <select id="saleProduct" required></select>
+                            </div>
+                            <div class="form-group">
+                                <label>当前库存</label>
+                                <input type="text" id="saleStock" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>销售数量</label>
+                                <input type="number" id="saleQuantity" step="0.01" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label>销售单价 (元)</label>
+                                <input type="number" id="salePrice" step="0.01" min="0" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>客户</label>
+                                <input type="text" id="saleCustomer" value="散客">
+                            </div>
+                            <div class="form-group">
+                                <label>操作员</label>
+                                <input type="text" id="saleOperator" value="收银员">
+                            </div>
+                            <div class="form-group">
+                                <label>备注</label>
+                                <input type="text" id="saleRemark">
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <div class="total-amount">应收金额: <span id="saleTotal">¥0.00</span></div>
+                            <button type="submit" class="btn btn-primary">确认收款</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="list-section">
+                    <h3>销售记录</h3>
+                    <div class="filter-row">
+                        <label>开始日期: <input type="date" id="saleStartDate"></label>
+                        <label>结束日期: <input type="date" id="saleEndDate"></label>
+                        <button class="btn btn-secondary" onclick="loadSales()">查询</button>
+                    </div>
+                    <table class="data-table" id="saleTable">
+                        <thead>
+                            <tr>
+                                <th>商品名称</th>
+                                <th>数量</th>
+                                <th>单价</th>
+                                <th>总金额</th>
+                                <th>客户</th>
+                                <th>操作员</th>
+                                <th>时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="inventory" class="page">
+                <h2>库存管理</h2>
+                <div class="form-section">
+                    <h3>新增商品</h3>
+                    <form id="productForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>商品名称</label>
+                                <input type="text" id="productName" required>
+                            </div>
+                            <div class="form-group">
+                                <label>分类</label>
+                                <input type="text" id="productCategory" required>
+                            </div>
+                            <div class="form-group">
+                                <label>单位</label>
+                                <input type="text" id="productUnit" required>
+                            </div>
+                            <div class="form-group">
+                                <label>初始库存</label>
+                                <input type="number" id="productStock" step="0.01" min="0" value="0">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>预警库存</label>
+                                <input type="number" id="productWarningStock" step="0.01" min="0" value="10">
+                            </div>
+                            <div class="form-group">
+                                <label>零售价 (元)</label>
+                                <input type="number" id="productRetailPrice" step="0.01" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label>进货价 (元)</label>
+                                <input type="number" id="productPurchasePrice" step="0.01" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label>供应商</label>
+                                <input type="text" id="productSupplier">
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">添加商品</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="list-section">
+                    <h3>商品列表</h3>
+                    <div class="filter-row">
+                        <label>分类: 
+                            <select id="productCategoryFilter">
+                                <option value="all">全部</option>
+                            </select>
+                        </label>
+                        <label>搜索: <input type="text" id="productKeyword" placeholder="输入商品名称"></label>
+                        <button class="btn btn-secondary" onclick="loadProducts()">查询</button>
+                    </div>
+                    <table class="data-table" id="productTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>商品名称</th>
+                                <th>分类</th>
+                                <th>单位</th>
+                                <th>库存</th>
+                                <th>预警值</th>
+                                <th>零售价</th>
+                                <th>进货价</th>
+                                <th>供应商</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="warning" class="page">
+                <h2>库存预警</h2>
+                <div class="warning-list" id="warningList"></div>
+            </div>
+
+            <div id="stats" class="page">
+                <h2>月度营收统计</h2>
+                <div class="filter-row">
+                    <label>年份: 
+                        <select id="statsYear">
+                            <option value="2024">2024</option>
+                            <option value="2025">2025</option>
+                            <option value="2026" selected>2026</option>
+                            <option value="2027">2027</option>
+                        </select>
+                    </label>
+                    <button class="btn btn-secondary" onclick="loadMonthlyStats()">查询</button>
+                </div>
+                <table class="data-table" id="statsTable">
+                    <thead>
+                        <tr>
+                            <th>月份</th>
+                            <th>销售额</th>
+                            <th>成本</th>
+                            <th>利润</th>
+                            <th>销售单数</th>
+                            <th>进货单数</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                    <tfoot>
+                        <tr>
+                            <th>合计</th>
+                            <th id="totalSalesSum">¥0.00</th>
+                            <th id="totalCostSum">¥0.00</th>
+                            <th id="totalProfitSum">¥0.00</th>
+                            <th id="totalSaleCountSum">0</th>
+                            <th id="totalPurchaseCountSum">0</th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

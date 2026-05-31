@@ -1,0 +1,72 @@
+CREATE DATABASE IF NOT EXISTS photo_reservation DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+USE photo_reservation;
+
+CREATE TABLE IF NOT EXISTS photo_package (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  description TEXT,
+  price DECIMAL(10,2) NOT NULL,
+  duration INT,
+  scene VARCHAR(50),
+  clothing_count VARCHAR(50),
+  photo_count VARCHAR(50),
+  cover_image VARCHAR(500),
+  images TEXT,
+  status TINYINT DEFAULT 1,
+  sort INT DEFAULT 0,
+  create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+  update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  deleted TINYINT DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS reservation (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  package_id BIGINT NOT NULL,
+  package_name VARCHAR(100),
+  customer_name VARCHAR(50) NOT NULL,
+  phone VARCHAR(20) NOT NULL,
+  appointment_date DATE NOT NULL,
+  appointment_time TIME NOT NULL,
+  address VARCHAR(200),
+  remark VARCHAR(500),
+  status TINYINT DEFAULT 0,
+  create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+  update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  deleted TINYINT DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS photo_order (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  order_no VARCHAR(32) NOT NULL,
+  reservation_id BIGINT,
+  package_id BIGINT,
+  package_name VARCHAR(100),
+  customer_name VARCHAR(50),
+  phone VARCHAR(20),
+  amount DECIMAL(10,2),
+  pay_status TINYINT DEFAULT 0,
+  order_status TINYINT DEFAULT 0,
+  pay_time DATETIME,
+  remark VARCHAR(500),
+  create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+  update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  deleted TINYINT DEFAULT 0,
+  UNIQUE KEY uk_order_no (order_no)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS photo_delivery (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  order_id BIGINT NOT NULL,
+  order_no VARCHAR(32),
+  customer_name VARCHAR(50),
+  phone VARCHAR(20),
+  photos TEXT,
+  delivery_status TINYINT DEFAULT 1,
+  delivery_time DATETIME,
+  receiver VARCHAR(50),
+  remark VARCHAR(500),
+  create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+  update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  deleted TINYINT DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  silver-care:
+    build: .
+    container_name: silver-care-booking
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/app
+    environment:
+      - TZ=Asia/Shanghai
+    restart: unless-stopped

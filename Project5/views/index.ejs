@@ -1,0 +1,102 @@
+<div class="stats-grid">
+    <div class="stat-card">
+        <h3>福利物资种类</h3>
+        <div class="number"><%= stats.totalItems %></div>
+    </div>
+    <div class="stat-card">
+        <h3>员工人数</h3>
+        <div class="number green"><%= stats.totalEmployees %></div>
+    </div>
+    <div class="stat-card">
+        <h3>发放批次</h3>
+        <div class="number orange"><%= stats.totalBatches %></div>
+    </div>
+    <div class="stat-card">
+        <h3>领取记录</h3>
+        <div class="number red"><%= stats.totalRecords %></div>
+    </div>
+    <div class="stat-card">
+        <h3>库存总量</h3>
+        <div class="number purple"><%= stats.totalStock %></div>
+    </div>
+    <div class="stat-card">
+        <h3>进行中批次</h3>
+        <div class="number green"><%= stats.activeBatches %></div>
+    </div>
+</div>
+
+<div class="two-columns">
+    <div class="section">
+        <h2>📋 最近领取记录</h2>
+        <% if (recentRecords.length > 0) { %>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>员工</th>
+                        <th>物资</th>
+                        <th>批次</th>
+                        <th>数量</th>
+                        <th>日期</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% recentRecords.forEach(function(record) { %>
+                        <tr>
+                            <td><%= record.employee_name %></td>
+                            <td><%= record.item_name %></td>
+                            <td><%= record.batch_name %></td>
+                            <td><%= record.quantity %></td>
+                            <td><%= record.receive_date %></td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        <% } else { %>
+            <div class="empty-state">
+                <p>暂无领取记录</p>
+            </div>
+        <% } %>
+    </div>
+
+    <div class="section">
+        <h2>🏆 发放热门物资</h2>
+        <% if (popularItems.length > 0) { %>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>物资名称</th>
+                        <th>分类</th>
+                        <th>库存</th>
+                        <th>已发放</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% popularItems.forEach(function(item) { %>
+                        <tr>
+                            <td><%= item.name %></td>
+                            <td><%= item.category %></td>
+                            <td><%= item.stock %></td>
+                            <td><%= item.total_distributed || 0 %></td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        <% } else { %>
+            <div class="empty-state">
+                <p>暂无物资数据</p>
+            </div>
+        <% } %>
+    </div>
+</div>
+
+<div class="section">
+    <h2>💡 系统说明</h2>
+    <p>本系统用于公司福利物资的管理和发放登记，主要功能包括：</p>
+    <ul style="margin-left: 20px; margin-top: 10px;">
+        <li><strong>福利物资管理</strong>：管理各类福利礼品的库存信息</li>
+        <li><strong>员工信息管理</strong>：维护员工基本信息</li>
+        <li><strong>发放批次管理</strong>：按节日或活动创建发放批次</li>
+        <li><strong>领取记录管理</strong>：登记和查询员工领取记录</li>
+    </ul>
+    <p style="margin-top: 10px; color: #666; font-size: 14px;">所有操作均实时记录，系统自动更新库存数量。</p>
+</div>

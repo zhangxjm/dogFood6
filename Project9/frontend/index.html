@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>培训机构教室预约系统</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="logo">
+                <span class="logo-icon">📚</span>
+                <h1>教室预约系统</h1>
+            </div>
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active" data-page="dashboard">
+                    <span class="nav-icon">📊</span>
+                    <span>数据概览</span>
+                </a>
+                <a href="#" class="nav-item" data-page="classrooms">
+                    <span class="nav-icon">🏢</span>
+                    <span>教室管理</span>
+                </a>
+                <a href="#" class="nav-item" data-page="booking">
+                    <span class="nav-icon">📅</span>
+                    <span>预约使用</span>
+                </a>
+                <a href="#" class="nav-item" data-page="courses">
+                    <span class="nav-icon">📖</span>
+                    <span>课程管理</span>
+                </a>
+                <a href="#" class="nav-item" data-page="records">
+                    <span class="nav-icon">📋</span>
+                    <span>使用记录</span>
+                </a>
+                <a href="#" class="nav-item" data-page="statistics">
+                    <span class="nav-icon">📈</span>
+                    <span>统计分析</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <h2 id="page-title">数据概览</h2>
+                    <p id="page-subtitle">欢迎使用培训机构教室预约系统</p>
+                </div>
+                <div class="header-right">
+                    <span class="current-date" id="current-date"></span>
+                    <button class="btn btn-primary" onclick="refreshData()">
+                        🔄 刷新数据
+                    </button>
+                </div>
+            </header>
+
+            <section id="content-area">
+            </section>
+        </main>
+    </div>
+
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">标题</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+                <button class="btn btn-primary" id="modal-confirm">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

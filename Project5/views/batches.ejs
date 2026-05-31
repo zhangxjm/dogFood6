@@ -1,0 +1,131 @@
+<div class="section">
+    <div class="toolbar">
+        <h2>📅 发放批次管理</h2>
+        <div>
+            <input type="text" id="searchBox" class="search-box" placeholder="搜索批次名称...">
+            <button class="btn btn-green" onclick="openModal('addBatchModal')">+ 新增批次</button>
+        </div>
+    </div>
+
+    <% if (batches.length > 0) { %>
+        <table class="table data-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>批次名称</th>
+                    <th>描述</th>
+                    <th>发放日期</th>
+                    <th>状态</th>
+                    <th>创建时间</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% batches.forEach(function(batch) { %>
+                    <tr>
+                        <td><%= batch.id %></td>
+                        <td><%= batch.name %></td>
+                        <td><%= batch.description %></td>
+                        <td><%= batch.batch_date %></td>
+                        <td>
+                            <% if (batch.status === 'active') { %>
+                                <span class="badge badge-active">进行中</span>
+                            <% } else { %>
+                                <span class="badge badge-completed">已完成</span>
+                            <% } %>
+                        </td>
+                        <td><%= batch.created_at %></td>
+                        <td>
+                            <button class="btn btn-orange" onclick="editBatch(<%= batch.id %>, '<%= batch.name %>', '<%= batch.description %>', '<%= batch.batch_date %>', '<%= batch.status %>')">编辑</button>
+                            <form id="deleteBatch<%= batch.id %>" action="/batches/<%= batch.id %>" method="POST" style="display: inline;">
+                                <input type="hidden" name="_method" value="DELETE">
+                                <button type="button" class="btn btn-red" onclick="confirmDelete('deleteBatch<%= batch.id %>')">删除</button>
+                            </form>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    <% } else { %>
+        <div class="empty-state">
+            <p>暂无批次数据，点击上方按钮添加新批次</p>
+        </div>
+    <% } %>
+</div>
+
+<div id="addBatchModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>新增批次</h3>
+            <button class="close-btn" onclick="closeModal('addBatchModal')">&times;</button>
+        </div>
+        <form action="/batches" method="POST">
+            <div class="form-group">
+                <label>批次名称</label>
+                <input type="text" name="name" required>
+            </div>
+            <div class="form-group">
+                <label>描述</label>
+                <textarea name="description" rows="2"></textarea>
+            </div>
+            <div class="form-group">
+                <label>发放日期</label>
+                <input type="date" name="batch_date">
+            </div>
+            <div class="form-group">
+                <label>状态</label>
+                <select name="status">
+                    <option value="active">进行中</option>
+                    <option value="completed">已完成</option>
+                </select>
+            </div>
+            <div class="actions">
+                <button type="button" class="btn" onclick="closeModal('addBatchModal')">取消</button>
+                <button type="submit" class="btn btn-green">确认添加</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="editBatchModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>编辑批次</h3>
+            <button class="close-btn" onclick="closeModal('editBatchModal')">&times;</button>
+        </div>
+        <form id="editBatchForm" action="" method="POST">
+            <input type="hidden" name="_method" value="PUT">
+            <input type="hidden" id="edit_batch_id" name="id">
+            <div class="form-group">
+                <label>批次名称</label>
+                <input type="text" id="edit_batch_name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label>描述</label>
+                <textarea id="edit_batch_description" name="description" rows="2"></textarea>
+            </div>
+            <div class="form-group">
+                <label>发放日期</label>
+                <input type="date" id="edit_batch_date" name="batch_date">
+            </div>
+            <div class="form-group">
+                <label>状态</label>
+                <select id="edit_batch_status" name="status">
+                    <option value="active">进行中</option>
+                    <option value="completed">已完成</option>
+                </select>
+            </div>
+            <div class="actions">
+                <button type="button" class="btn" onclick="closeModal('editBatchModal')">取消</button>
+                <button type="submit" class="btn btn-orange">保存修改</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.getElementById('editBatchForm').addEventListener('submit', function(e) {
+        const id = document.getElementById('edit_batch_id').value;
+        this.action = '/batches/' + id;
+    });
+</script>

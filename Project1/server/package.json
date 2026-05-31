@@ -1,0 +1,15 @@
+{
+  "name": "unlock-service-server",
+  "version": "1.0.0",
+  "description": "City convenience unlock service registration system backend",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "init": "node init_db.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "sqlite3": "^5.1.7"
+  }
+}

@@ -1,0 +1,119 @@
+<div class="section">
+    <div class="toolbar">
+        <h2>👥 员工信息管理</h2>
+        <div>
+            <input type="text" id="searchBox" class="search-box" placeholder="搜索员工姓名/部门...">
+            <button class="btn btn-green" onclick="openModal('addEmployeeModal')">+ 新增员工</button>
+        </div>
+    </div>
+
+    <% if (employees.length > 0) { %>
+        <table class="table data-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>姓名</th>
+                    <th>部门</th>
+                    <th>职位</th>
+                    <th>电话</th>
+                    <th>创建时间</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% employees.forEach(function(emp) { %>
+                    <tr>
+                        <td><%= emp.id %></td>
+                        <td><%= emp.name %></td>
+                        <td><%= emp.department %></td>
+                        <td><%= emp.position %></td>
+                        <td><%= emp.phone %></td>
+                        <td><%= emp.created_at %></td>
+                        <td>
+                            <button class="btn btn-orange" onclick="editEmployee(<%= emp.id %>, '<%= emp.name %>', '<%= emp.department %>', '<%= emp.position %>', '<%= emp.phone %>')">编辑</button>
+                            <form id="deleteEmp<%= emp.id %>" action="/employees/<%= emp.id %>" method="POST" style="display: inline;">
+                                <input type="hidden" name="_method" value="DELETE">
+                                <button type="button" class="btn btn-red" onclick="confirmDelete('deleteEmp<%= emp.id %>')">删除</button>
+                            </form>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    <% } else { %>
+        <div class="empty-state">
+            <p>暂无员工数据，点击上方按钮添加新员工</p>
+        </div>
+    <% } %>
+</div>
+
+<div id="addEmployeeModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>新增员工</h3>
+            <button class="close-btn" onclick="closeModal('addEmployeeModal')">&times;</button>
+        </div>
+        <form action="/employees" method="POST">
+            <div class="form-group">
+                <label>姓名</label>
+                <input type="text" name="name" required>
+            </div>
+            <div class="form-group">
+                <label>部门</label>
+                <input type="text" name="department" placeholder="如：技术部、市场部等">
+            </div>
+            <div class="form-group">
+                <label>职位</label>
+                <input type="text" name="position">
+            </div>
+            <div class="form-group">
+                <label>电话</label>
+                <input type="text" name="phone">
+            </div>
+            <div class="actions">
+                <button type="button" class="btn" onclick="closeModal('addEmployeeModal')">取消</button>
+                <button type="submit" class="btn btn-green">确认添加</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="editEmployeeModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>编辑员工</h3>
+            <button class="close-btn" onclick="closeModal('editEmployeeModal')">&times;</button>
+        </div>
+        <form id="editEmployeeForm" action="" method="POST">
+            <input type="hidden" name="_method" value="PUT">
+            <input type="hidden" id="edit_emp_id" name="id">
+            <div class="form-group">
+                <label>姓名</label>
+                <input type="text" id="edit_emp_name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label>部门</label>
+                <input type="text" id="edit_emp_department" name="department">
+            </div>
+            <div class="form-group">
+                <label>职位</label>
+                <input type="text" id="edit_emp_position" name="position">
+            </div>
+            <div class="form-group">
+                <label>电话</label>
+                <input type="text" id="edit_emp_phone" name="phone">
+            </div>
+            <div class="actions">
+                <button type="button" class="btn" onclick="closeModal('editEmployeeModal')">取消</button>
+                <button type="submit" class="btn btn-orange">保存修改</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.getElementById('editEmployeeForm').addEventListener('submit', function(e) {
+        const id = document.getElementById('edit_emp_id').value;
+        this.action = '/employees/' + id;
+    });
+</script>

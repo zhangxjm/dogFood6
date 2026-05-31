@@ -1,0 +1,74 @@
+services:
+  mosquitto:
+    image: eclipse-mosquitto:2.0.18
+    container_name: coldchain-mqtt
+    ports:
+      - "1883:1883"
+      - "9002:9001"
+    volumes:
+      - ./docker/mosquitto/config:/mosquitto/config
+      - ./docker/mosquitto/data:/mosquitto/data
+      - ./docker/mosquitto/log:/mosquitto/log
+    restart: always
+    networks:
+      - coldchain-network
+
+  influxdb:
+    image: influxdb:2.7.5
+    container_name: coldchain-influxdb
+    ports:
+      - "8086:8086"
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=admin123456
+      - DOCKER_INFLUXDB_INIT_ORG=coldchain
+      - DOCKER_INFLUXDB_INIT_BUCKET=sensor_data
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=secret-token-coldchain-2024
+    volumes:
+      - ./docker/influxdb/data:/var/lib/influxdb2
+      - ./docker/influxdb/config:/etc/influxdb2
+    restart: always
+    networks:
+      - coldchain-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: coldchain-backend
+    ports:
+      - "8080:8080"
+    environment:
+      - MQTT_BROKER=mosquitto
+      - MQTT_PORT=1883
+      - INFLUXDB_URL=http://influxdb:8086
+      - INFLUXDB_TOKEN=secret-token-coldchain-2024
+      - INFLUXDB_ORG=coldchain
+      - INFLUXDB_BUCKET=sensor_data
+      - DB_PATH=/app/data/coldchain.db
+    volumes:
+      - ./backend/data:/app/data
+    depends_on:
+      - mosquitto
+      - influxdb
+    restart: always
+    networks:
+      - coldchain-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: coldchain-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: always
+    networks:
+      - coldchain-network
+
+networks:
+  coldchain-network:
+    driver: bridge

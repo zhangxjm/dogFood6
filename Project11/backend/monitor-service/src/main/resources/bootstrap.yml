@@ -1,0 +1,55 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: monitor-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+        namespace: ttc-system
+      config:
+        server-addr: 127.0.0.1:8848
+        namespace: ttc-system
+        file-extension: yaml
+    sentinel:
+      transport:
+        dashboard: 127.0.0.1:8858
+      eager: true
+  datasource:
+    driver-class-name: org.sqlite.JDBC
+    url: jdbc:sqlite:./database/ttc.db
+    username: admin
+    password: admin123
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    database: 0
+    timeout: 10000ms
+    lettuce:
+      pool:
+        max-active: 8
+        max-wait: -1ms
+        max-idle: 8
+        min-idle: 0
+
+mybatis-plus:
+  mapper-locations: classpath:mapper/**/*.xml
+  type-aliases-package: com.ttc.monitor.domain
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      id-type: auto
+
+rocketmq:
+  name-server: 127.0.0.1:9876
+  producer:
+    group: ttc-monitor-producer-group
+    send-message-timeout: 3000
+
+logging:
+  level:
+    com.ttc.monitor: debug
+    org.springframework: info

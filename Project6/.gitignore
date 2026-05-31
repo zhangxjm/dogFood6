@@ -1,0 +1,15 @@
+node_modules/
+vendor/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+go.work
+go.work.sum
+tmp/
+.idea/
+.vscode/
+*.log

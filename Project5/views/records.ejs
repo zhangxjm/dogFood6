@@ -1,0 +1,105 @@
+<div class="section">
+    <div class="toolbar">
+        <h2>📝 领取记录管理</h2>
+        <div>
+            <input type="text" id="searchBox" class="search-box" placeholder="搜索员工/物资/批次...">
+            <button class="btn btn-green" onclick="openModal('addRecordModal')">+ 新增领取</button>
+        </div>
+    </div>
+
+    <% if (records.length > 0) { %>
+        <table class="table data-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>员工</th>
+                    <th>物资</th>
+                    <th>批次</th>
+                    <th>数量</th>
+                    <th>领取日期</th>
+                    <th>备注</th>
+                    <th>登记时间</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% records.forEach(function(record) { %>
+                    <tr>
+                        <td><%= record.id %></td>
+                        <td><%= record.employee_name %></td>
+                        <td><%= record.item_name %></td>
+                        <td><%= record.batch_name %></td>
+                        <td><%= record.quantity %></td>
+                        <td><%= record.receive_date %></td>
+                        <td><%= record.remark %></td>
+                        <td><%= record.created_at %></td>
+                        <td>
+                            <form id="deleteRecord<%= record.id %>" action="/records/<%= record.id %>" method="POST" style="display: inline;">
+                                <input type="hidden" name="_method" value="DELETE">
+                                <button type="button" class="btn btn-red" onclick="confirmDelete('deleteRecord<%= record.id %>')">删除</button>
+                            </form>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    <% } else { %>
+        <div class="empty-state">
+            <p>暂无领取记录，点击上方按钮添加新记录</p>
+        </div>
+    <% } %>
+</div>
+
+<div id="addRecordModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>新增领取记录</h3>
+            <button class="close-btn" onclick="closeModal('addRecordModal')">&times;</button>
+        </div>
+        <form action="/records" method="POST">
+            <div class="form-group">
+                <label>员工</label>
+                <select name="employee_id" required>
+                    <option value="">请选择员工</option>
+                    <% employees.forEach(function(emp) { %>
+                        <option value="<%= emp.id %>"><%= emp.name %> - <%= emp.department %></option>
+                    <% }); %>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>物资</label>
+                <select name="item_id" required>
+                    <option value="">请选择物资</option>
+                    <% items.forEach(function(item) { %>
+                        <option value="<%= item.id %>"><%= item.name %> (库存: <%= item.stock %><%= item.unit %>)</option>
+                    <% }); %>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>批次</label>
+                <select name="batch_id" required>
+                    <option value="">请选择批次</option>
+                    <% batches.forEach(function(batch) { %>
+                        <option value="<%= batch.id %>"><%= batch.name %></option>
+                    <% }); %>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>数量</label>
+                <input type="number" name="quantity" value="1" min="1">
+            </div>
+            <div class="form-group">
+                <label>领取日期</label>
+                <input type="date" name="receive_date" value="<%= new Date().toISOString().split('T')[0] %>">
+            </div>
+            <div class="form-group">
+                <label>备注</label>
+                <input type="text" name="remark" placeholder="选填">
+            </div>
+            <div class="actions">
+                <button type="button" class="btn" onclick="closeModal('addRecordModal')">取消</button>
+                <button type="submit" class="btn btn-green">确认登记</button>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,6 @@
+2026-05-27 21:53:20,011|172.18.0.4|command-service|DEFAULT_GROUP|ttc-system|null|-1|pull|not-found|-1|192.168.1.12|false
+2026-05-27 21:53:20,070|172.18.0.4|command-service.yaml|DEFAULT_GROUP|ttc-system|null|-1|pull|not-found|-1|192.168.1.12|false
+2026-05-27 21:53:31,798|172.18.0.4|payload-service|DEFAULT_GROUP|ttc-system|null|-1|pull|not-found|-1|192.168.1.12|false
+2026-05-27 21:53:31,816|172.18.0.4|payload-service.yaml|DEFAULT_GROUP|ttc-system|null|-1|pull|not-found|-1|192.168.1.12|false
+2026-05-27 21:53:45,984|172.18.0.4|monitor-service|DEFAULT_GROUP|ttc-system|null|-1|pull|not-found|-1|192.168.1.12|false
+2026-05-27 21:53:46,003|172.18.0.4|monitor-service.yaml|DEFAULT_GROUP|ttc-system|null|-1|pull|not-found|-1|192.168.1.12|false

@@ -1,0 +1,21 @@
+{
+  "name": "ttc-frontend",
+  "version": "1.0.0",
+  "description": "航天发射场测控指令调度系统前端",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@solidjs/router": "^0.10.10",
+    "axios": "^1.6.7",
+    "echarts": "^5.5.0",
+    "solid-js": "^1.8.15"
+  },
+  "devDependencies": {
+    "vite": "^5.2.0",
+    "vite-plugin-solid": "^2.10.2"
+  }
+}

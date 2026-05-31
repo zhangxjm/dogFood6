@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title || '公司福利管理系统' %></title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <h1>🎁 公司礼品福利发放登记系统</h1>
+            <nav class="nav">
+                <a href="/" class="<%= currentPath === '/' ? 'active' : '' %>">系统首页</a>
+                <a href="/items" class="<%= currentPath === '/items' ? 'active' : '' %>">福利物资</a>
+                <a href="/employees" class="<%= currentPath === '/employees' ? 'active' : '' %>">员工信息</a>
+                <a href="/batches" class="<%= currentPath === '/batches' ? 'active' : '' %>">发放批次</a>
+                <a href="/records" class="<%= currentPath === '/records' ? 'active' : '' %>">领取记录</a>
+            </nav>
+        </div>
+    </div>
+    <div class="container">
+        <%- body %>
+    </div>
+    <script src="/js/app.js"></script>
+</body>
+</html>

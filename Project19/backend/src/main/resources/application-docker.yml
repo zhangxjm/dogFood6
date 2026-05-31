@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: quantum-visualization
+  datasource:
+    url: jdbc:sqlite:/data/quantum.db
+    driver-class-name: org.sqlite.JDBC
+    username: admin
+    password: admin123
+  jpa:
+    database-platform: org.hibernate.community.dialect.SQLiteDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+  address: 0.0.0.0
+
+logging:
+  level:
+    com.quantum: INFO

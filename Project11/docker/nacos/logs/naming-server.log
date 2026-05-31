@@ -1,0 +1,126 @@
+2026-05-27 20:41:35,723 ERROR [TASK-FAILED] java.lang.InterruptedException
+
+java.lang.InterruptedException: null
+	at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.reportInterruptAfterWait(AbstractQueuedSynchronizer.java:2014)
+	at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:2048)
+	at java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:403)
+	at com.alibaba.nacos.common.task.engine.TaskExecuteWorker$InnerWorker.run(TaskExecuteWorker.java:118)
+2026-05-27 20:41:35,723 ERROR [TASK-FAILED] java.lang.InterruptedException
+
+java.lang.InterruptedException: null
+	at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.reportInterruptAfterWait(AbstractQueuedSynchronizer.java:2014)
+	at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:2048)
+	at java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:403)
+	at com.alibaba.nacos.common.task.engine.TaskExecuteWorker$InnerWorker.run(TaskExecuteWorker.java:118)
+2026-05-27 20:41:35,724 ERROR [TASK-FAILED] java.lang.InterruptedException
+
+java.lang.InterruptedException: null
+	at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.reportInterruptAfterWait(AbstractQueuedSynchronizer.java:2014)
+	at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:2048)
+	at java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:403)
+	at com.alibaba.nacos.common.task.engine.TaskExecuteWorker$InnerWorker.run(TaskExecuteWorker.java:118)
+2026-05-27 20:41:35,724 ERROR [TASK-FAILED] java.lang.InterruptedException
+
+java.lang.InterruptedException: null
+	at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.reportInterruptAfterWait(AbstractQueuedSynchronizer.java:2014)
+	at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:2048)
+	at java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:403)
+	at com.alibaba.nacos.common.task.engine.TaskExecuteWorker$InnerWorker.run(TaskExecuteWorker.java:118)
+2026-05-27 20:41:35,724 ERROR [TASK-FAILED] java.lang.InterruptedException
+
+java.lang.InterruptedException: null
+	at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.reportInterruptAfterWait(AbstractQueuedSynchronizer.java:2014)
+	at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:2048)
+	at java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:403)
+	at com.alibaba.nacos.common.task.engine.TaskExecuteWorker$InnerWorker.run(TaskExecuteWorker.java:118)
+2026-05-27 20:41:35,728 ERROR [TASK-FAILED] java.lang.InterruptedException
+
+java.lang.InterruptedException: null
+	at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.reportInterruptAfterWait(AbstractQueuedSynchronizer.java:2014)
+	at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:2048)
+	at java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:403)
+	at com.alibaba.nacos.common.task.engine.TaskExecuteWorker$InnerWorker.run(TaskExecuteWorker.java:118)
+2026-05-27 20:41:35,730 ERROR [TASK-FAILED] java.lang.InterruptedException
+
+java.lang.InterruptedException: null
+	at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.reportInterruptAfterWait(AbstractQueuedSynchronizer.java:2014)
+	at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await(AbstractQueuedSynchronizer.java:2048)
+	at java.util.concurrent.ArrayBlockingQueue.take(ArrayBlockingQueue.java:403)
+	at com.alibaba.nacos.common.task.engine.TaskExecuteWorker$InnerWorker.run(TaskExecuteWorker.java:118)
+2026-05-27 20:41:56,610 INFO [SelectorManager] Load SelectorContextBuilder(class com.alibaba.nacos.naming.selector.context.CmdbSelectorContextBuilder) contextType(CMDB) successfully.
+
+2026-05-27 20:41:56,610 INFO [SelectorManager] Load SelectorContextBuilder(class com.alibaba.nacos.naming.selector.context.NoneSelectorContextBuilder) contextType(NONE) successfully.
+
+2026-05-27 20:41:56,614 INFO [SelectorManager] Load Selector(class com.alibaba.nacos.naming.selector.LabelSelector) type(label) contextType(CMDB) successfully.
+
+2026-05-27 20:41:56,614 INFO [SelectorManager] Load Selector(class com.alibaba.nacos.naming.selector.NoneSelector) type(none) contextType(NONE) successfully.
+
+2026-05-27 20:41:59,004 INFO Load instance extension handler []
+
+2026-05-27 21:53:00,650 INFO Client connection 1779889979956_172.18.0.1_46090 disconnect, remove instances and subscribers
+
+2026-05-27 21:53:00,759 INFO Client connection 1779889980309_172.18.0.1_46092 disconnect, remove instances and subscribers
+
+2026-05-27 21:53:06,609 INFO Client connection 1779889986588_172.18.0.1_45200 connect
+
+2026-05-27 21:53:06,769 INFO Client change for service Service{namespace='ttc-system', group='DEFAULT_GROUP', name='gateway-service', ephemeral=true, revision=0}, 1779889986588_172.18.0.1_45200
+
+2026-05-27 21:53:30,730 INFO Client connection 1779890010711_172.18.0.1_48352 connect
+
+2026-05-27 21:53:30,842 INFO Client change for service Service{namespace='ttc-system', group='DEFAULT_GROUP', name='command-service', ephemeral=true, revision=0}, 1779890010711_172.18.0.1_48352
+
+2026-05-27 21:53:42,423 INFO Client connection 1779890022395_172.18.0.1_37232 connect
+
+2026-05-27 21:53:42,549 INFO Client change for service Service{namespace='ttc-system', group='DEFAULT_GROUP', name='payload-service', ephemeral=true, revision=0}, 1779890022395_172.18.0.1_37232
+
+2026-05-27 21:53:55,056 INFO Client connection 1779890035037_172.18.0.1_38698 connect
+
+2026-05-27 21:53:55,172 INFO Client change for service Service{namespace='ttc-system', group='DEFAULT_GROUP', name='monitor-service', ephemeral=true, revision=0}, 1779890035037_172.18.0.1_38698
+
+2026-05-27 22:16:41,119 INFO Client connection 1779890010711_172.18.0.1_48352 disconnect, remove instances and subscribers
+
+2026-05-27 22:16:41,169 INFO Client connection 1779889999712_172.18.0.1_38390 disconnect, remove instances and subscribers
+
+2026-05-27 22:18:27,773 WARN namespace : ttc-system, [DEFAULT_GROUP@@command-service] services are automatically cleaned
+
+2026-05-27 22:36:45,915 INFO Client remove for service Service{namespace='ttc-system', group='DEFAULT_GROUP', name='gateway-service', ephemeral=true, revision=1}, 1779889986588_172.18.0.1_45200
+
+2026-05-27 22:36:45,950 INFO Client connection 1779889986588_172.18.0.1_45200 disconnect, remove instances and subscribers
+
+2026-05-27 22:36:48,522 INFO Client connection 1779889980612_172.18.0.1_46098 disconnect, remove instances and subscribers
+
+2026-05-27 22:36:53,298 INFO Client remove for service Service{namespace='ttc-system', group='DEFAULT_GROUP', name='payload-service', ephemeral=true, revision=1}, 1779890022395_172.18.0.1_37232
+
+2026-05-27 22:36:53,326 INFO Client connection 1779890022395_172.18.0.1_37232 disconnect, remove instances and subscribers
+
+2026-05-27 22:36:53,902 INFO Client connection 1779890011501_172.18.0.1_48358 disconnect, remove instances and subscribers
+
+2026-05-27 22:36:56,736 INFO Client remove for service Service{namespace='ttc-system', group='DEFAULT_GROUP', name='monitor-service', ephemeral=true, revision=1}, 1779890035037_172.18.0.1_38698
+
+2026-05-27 22:36:56,762 INFO Client connection 1779890035037_172.18.0.1_38698 disconnect, remove instances and subscribers
+
+2026-05-27 22:36:57,322 INFO Client connection 1779890025633_172.18.0.1_38690 disconnect, remove instances and subscribers
+
+2026-05-27 22:38:27,741 WARN namespace : ttc-system, [DEFAULT_GROUP@@monitor-service] services are automatically cleaned
+
+2026-05-27 22:38:27,742 WARN namespace : ttc-system, [DEFAULT_GROUP@@gateway-service] services are automatically cleaned
+
+2026-05-27 22:38:27,742 WARN namespace : ttc-system, [DEFAULT_GROUP@@payload-service] services are automatically cleaned
+
+2026-05-27 22:38:34,534 WARN [NamingServerHttpClientManager] Start destroying HTTP-Client
+
+2026-05-27 22:38:34,808 WARN [NamingServerHttpClientManager] Destruction of the end
+
+2026-05-27 22:38:35,307 ERROR [HEALTH-CHECK-V2] error while processing NIO task
+
+java.lang.InterruptedException: null
+	at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.reportInterruptAfterWait(AbstractQueuedSynchronizer.java:2014)
+	at java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.awaitNanos(AbstractQueuedSynchronizer.java:2088)
+	at java.util.concurrent.LinkedBlockingQueue.poll(LinkedBlockingQueue.java:467)
+	at com.alibaba.nacos.naming.healthcheck.v2.processor.TcpHealthCheckProcessor.processTask(TcpHealthCheckProcessor.java:122)
+	at com.alibaba.nacos.naming.healthcheck.v2.processor.TcpHealthCheckProcessor.run(TcpHealthCheckProcessor.java:139)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:750)

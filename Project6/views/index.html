@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>农家菜点餐系统</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+            background: #f5f7fa;
+        }
+        .sidebar {
+            min-height: 100vh;
+            background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
+        }
+        .sidebar .nav-link {
+            color: #ecf0f1;
+            padding: 15px 20px;
+            border-left: 4px solid transparent;
+            transition: all 0.3s;
+        }
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background: rgba(255,255,255,0.1);
+            border-left-color: #3498db;
+        }
+        .sidebar .nav-link i {
+            margin-right: 10px;
+            width: 20px;
+        }
+        .main-content {
+            padding: 20px;
+        }
+        .page-title {
+            color: #2c3e50;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+        .card-header {
+            background: white;
+            border-bottom: 1px solid #eee;
+            border-radius: 12px 12px 0 0 !important;
+            padding: 15px 20px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+        }
+        .table thead th {
+            background: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+            color: #495057;
+            font-weight: 600;
+        }
+        .badge-success { background: #27ae60; }
+        .badge-warning { background: #f39c12; }
+        .badge-danger { background: #e74c3c; }
+        .badge-info { background: #3498db; }
+        .stat-card {
+            border-radius: 12px;
+            padding: 20px;
+            color: white;
+        }
+        .stat-card.blue { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .stat-card.green { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+        .stat-card.orange { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .stat-card.red { background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%); }
+        .stat-card .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+        }
+        .stat-card .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        .dish-card {
+            border: none;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+        .dish-card:hover {
+            transform: translateY(-5px);
+        }
+        .dish-card .card-body {
+            padding: 15px;
+        }
+        .dish-price {
+            color: #e74c3c;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .kitchen-item {
+            border-left: 4px solid #f39c12;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: white;
+            border-radius: 8px;
+        }
+        .kitchen-item.completed {
+            border-left-color: #27ae60;
+            opacity: 0.7;
+        }
+        .table-card {
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .table-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .table-card.free { border-color: #27ae60; }
+        .table-card.using { border-color: #f39c12; background: #fff9e6; }
+        .table-card.cleaning { border-color: #3498db; }
+        .modal-content {
+            border-radius: 12px;
+        }
+        .nav-tabs .nav-link {
+            color: #666;
+            border: none;
+        }
+        .nav-tabs .nav-link.active {
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+        }
+        .category-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            background: #e8f4fd;
+            color: #3498db;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .order-total {
+            font-size: 24px;
+            font-weight: bold;
+            color: #e74c3c;
+        }
+        .pagination .page-link {
+            color: #667eea;
+        }
+        .pagination .page-item.active .page-link {
+            background: #667eea;
+            border-color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-2 sidebar">
+                <div class="p-3 text-white border-bottom border-secondary">
+                    <h5><i class="bi bi-people"></i> {{.role}}</h5>
+                    <small>{{.username}}</small>
+                </div>
+                <ul class="nav flex-column mt-3">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" onclick="showPage('dashboard', this)">
+                            <i class="bi bi-speedometer2"></i>首页概览
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showPage('dishes', this)">
+                            <i class="bi bi-journal-text"></i>菜品管理
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showPage('tables', this)">
+                            <i class="bi bi-layers"></i>桌台管理
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showPage('orders', this)">
+                            <i class="bi bi-receipt"></i>点餐下单
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showPage('kitchen', this)">
+                            <i class="bi bi-bell"></i>后厨出餐
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showPage('statistics', this)">
+                            <i class="bi bi-bar-chart"></i>营业数据
+                        </a>
+                    </li>
+                </ul>
+                <div class="p-3 mt-3">
+                    <a href="/logout" class="btn btn-outline-danger w-100">
+                        <i class="bi bi-box-arrow-right"></i> 退出登录
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-10 main-content">
+                <div id="page-dashboard" class="page">
+                    <h4 class="page-title"><i class="bi bi-speedometer2"></i> 首页概览</h4>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="stat-card blue">
+                                <i class="bi bi-journal-text" style="font-size: 36px;"></i>
+                                <div class="mt-2">
+                                    <div class="stat-number" id="stat-dishes">-</div>
+                                    <div class="stat-label">菜品总数</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card green">
+                                <i class="bi bi-layers" style="font-size: 36px;"></i>
+                                <div class="mt-2">
+                                    <div class="stat-number" id="stat-tables">-</div>
+                                    <div class="stat-label">桌台总数</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card orange">
+                                <i class="bi bi-receipt" style="font-size: 36px;"></i>
+                                <div class="mt-2">
+                                    <div class="stat-number" id="stat-orders">-</div>
+                                    <div class="stat-label">今日订单</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card red">
+                                <i class="bi bi-cash-stack" style="font-size: 36px;"></i>
+                                <div class="mt-2">
+                                    <div class="stat-number" id="stat-revenue">-</div>
+                                    <div class="stat-label">今日营收</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5><i class="bi bi-clock"></i> 最新订单</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="latest-orders">
+                                        <div class="text-center text-muted py-4">加载中...</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5><i class="bi bi-bell"></i> 待出餐提醒</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="kitchen-alerts">
+                                        <div class="text-center text-muted py-4">加载中...</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="page-dishes" class="page" style="display: none;">
+                    <h4 class="page-title"><i class="bi bi-journal-text"></i> 菜品管理</h4>
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">菜品列表</h5>
+                            <button class="btn btn-primary" onclick="showDishModal()">
+                                <i class="bi bi-plus-circle"></i> 添加菜品
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div class="row" id="dish-list">
+                                <div class="col-12 text-center text-muted py-4">加载中...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="page-tables" class="page" style="display: none;">
+                    <h4 class="page-title"><i class="bi bi-layers"></i> 桌台管理</h4>
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">桌台列表</h5>
+                            <button class="btn btn-primary" onclick="showTableModal()">
+                                <i class="bi bi-plus-circle"></i> 添加桌台
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div class="row" id="table-list">
+                                <div class="col-12 text-center text-muted py-4">加载中...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="page-orders" class="page" style="display: none;">
+                    <h4 class="page-title"><i class="bi bi-receipt"></i> 点餐下单</h4>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5>选择菜品</h5>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="nav nav-tabs mb-3" id="dish-tabs">
+                                        <li class="nav-item">
+                                            <a class="nav-link active" href="#" onclick="filterDishes('all', this)">全部</a>
+                                        </li>
+                                    </ul>
+                                    <div class="row" id="order-dish-list">
+                                        <div class="col-12 text-center text-muted py-4">加载中...</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5>当前订单</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label class="form-label">选择桌台</label>
+                                        <select class="form-select" id="order-table">
+                                            <option value="">请选择桌台</option>
+                                        </select>
+                                    </div>
+                                    <div id="order-items">
+                                        <div class="text-center text-muted py-3">请选择菜品</div>
+                                    </div>
+                                    <hr>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span>合计：</span>
+                                        <span class="order-total" id="order-total">¥0.00</span>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">备注</label>
+                                        <textarea class="form-control" id="order-remark" rows="2" placeholder="请输入备注（选填）"></textarea>
+                                    </div>
+                                    <button class="btn btn-primary w-100" onclick="submitOrder()">
+                                        <i class="bi bi-check-circle"></i> 确认下单
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="page-kitchen" class="page" style="display: none;">
+                    <h4 class="page-title"><i class="bi bi-bell"></i> 后厨出餐</h4>
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">待出餐列表</h5>
+                            <button class="btn btn-secondary" onclick="loadKitchen()">
+                                <i class="bi bi-arrow-clockwise"></i> 刷新
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div id="kitchen-list">
+                                <div class="text-center text-muted py-4">加载中...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="page-statistics" class="page" style="display: none;">
+                    <h4 class="page-title"><i class="bi bi-bar-chart"></i> 营业数据</h4>
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">数据统计</h5>
+                            <div>
+                                <input type="date" class="form-control d-inline-block" id="stat-start" style="width: 150px;">
+                                <span> 至 </span>
+                                <input type="date" class="form-control d-inline-block" id="stat-end" style="width: 150px;">
+                                <button class="btn btn-primary" onclick="loadStatistics()">
+                                    <i class="bi bi-search"></i> 查询
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-4">
+                                <div class="col-md-4">
+                                    <div class="stat-card blue">
+                                        <div class="stat-label">订单总数</div>
+                                        <div class="stat-number" id="stat-total-orders">0</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="stat-card green">
+                                        <div class="stat-label">总营收</div>
+                                        <div class="stat-number" id="stat-total-revenue">¥0.00</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="stat-card orange">
+                                        <div class="stat-label">平均客单价</div>
+                                        <div class="stat-number" id="stat-avg-order">¥0.00</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>每日销售趋势</h6>
+                                    <table class="table table-striped mt-3">
+                                        <thead>
+                                            <tr>
+                                                <th>日期</th>
+                                                <th>订单数</th>
+                                                <th>营收</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="daily-stats">
+                                            <tr><td colspan="3" class="text-center text-muted">暂无数据</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>热销菜品 TOP10</h6>
+                                    <table class="table table-striped mt-3">
+                                        <thead>
+                                            <tr>
+                                                <th>排名</th>
+                                                <th>菜品</th>
+                                                <th>数量</th>
+                                                <th>营收</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="dish-stats">
+                                            <tr><td colspan="4" class="text-center text-muted">暂无数据</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="dishModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="dishModalTitle">添加菜品</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="dish-id">
+                    <div class="mb-3">
+                        <label class="form-label">菜品名称</label>
+                        <input type="text" class="form-control" id="dish-name">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">菜品描述</label>
+                        <textarea class="form-control" id="dish-description" rows="3"></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="form-label">价格</label>
+                            <input type="number" class="form-control" id="dish-price" step="0.01" min="0">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">分类</label>
+                            <select class="form-select" id="dish-category">
+                                <option value="肉类">肉类</option>
+                                <option value="蔬菜">蔬菜</option>
+                                <option value="汤类">汤类</option>
+                                <option value="水产">水产</option>
+                                <option value="凉菜">凉菜</option>
+                                <option value="主食">主食</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="saveDish()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="tableModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="tableModalTitle">添加桌台</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="table-id">
+                    <div class="mb-3">
+                        <label class="form-label">桌台号</label>
+                        <input type="text" class="form-control" id="table-number">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">座位数</label>
+                        <input type="number" class="form-control" id="table-seats" min="1">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="saveTable()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        var currentOrderItems = [];
+        var editMode = false;
+
+        function showPage(page, element) {
+            document.querySelectorAll('.page').forEach(function(p) { p.style.display = 'none'; });
+            document.getElementById('page-' + page).style.display = 'block';
+            document.querySelectorAll('.sidebar .nav-link').forEach(function(link) {
+                link.classList.remove('active');
+            });
+            if (element) {
+                element.classList.add('active');
+            }
+
+            if (page === 'dashboard') loadDashboard();
+            if (page === 'dishes') loadDishes();
+            if (page === 'tables') loadTables();
+            if (page === 'orders') loadOrderPage();
+            if (page === 'kitchen') loadKitchen();
+            if (page === 'statistics') loadStatistics();
+        }
+
+        function loadDashboard() {
+            fetch('/dishes').then(function(r) { return r.json(); }).then(function(data) {
+                document.getElementById('stat-dishes').textContent = data.length || 0;
+            });
+            fetch('/tables').then(function(r) { return r.json(); }).then(function(data) {
+                document.getElementById('stat-tables').textContent = data.length || 0;
+            });
+            fetch('/statistics/today').then(function(r) { return r.json(); }).then(function(data) {
+                document.getElementById('stat-orders').textContent = data.total_orders || 0;
+                document.getElementById('stat-revenue').textContent = '¥' + (data.total_revenue || 0).toFixed(2);
+            });
+            fetch('/orders').then(function(r) { return r.json(); }).then(function(data) {
+                var html = '';
+                (data || []).slice(0, 5).forEach(function(order) {
+                    html += '<div class="d-flex justify-content-between align-items-center py-2 border-bottom">' +
+                        '<div>' +
+                        '<strong>' + order.order_no + '</strong>' +
+                        '<span class="badge bg-info ms-2">' + order.table_number + '</span>' +
+                        '</div>' +
+                        '<div>' +
+                        '<span class="text-danger">¥' + order.total_amount.toFixed(2) + '</span>' +
+                        '<span class="badge bg-warning ms-2">' + order.status + '</span>' +
+                        '</div>' +
+                        '</div>';
+                });
+                document.getElementById('latest-orders').innerHTML = html || '<div class="text-center text-muted py-4">暂无订单</div>';
+            });
+            fetch('/kitchen').then(function(r) { return r.json(); }).then(function(data) {
+                var html = '';
+                (data || []).slice(0, 5).forEach(function(item) {
+                    html += '<div class="kitchen-item">' +
+                        '<div class="d-flex justify-content-between">' +
+                        '<div><strong>' + item.dish_name + '</strong> x' + item.quantity + '</div>' +
+                        '<span class="badge bg-warning">待出餐</span>' +
+                        '</div>' +
+                        '<small class="text-muted">桌台 ' + item.table_number + ' | ' + item.order_no + '</small>' +
+                        '</div>';
+                });
+                document.getElementById('kitchen-alerts').innerHTML = html || '<div class="text-center text-muted py-4">暂无待出餐</div>';
+            });
+        }
+
+        function loadDishes() {
+            fetch('/dishes').then(function(r) { return r.json(); }).then(function(data) {
+                var html = '';
+                (data || []).forEach(function(dish) {
+                    html += '<div class="col-md-3 mb-3">' +
+                        '<div class="card dish-card">' +
+                        '<div class="card-body">' +
+                        '<h6 class="card-title">' + dish.name + '</h6>' +
+                        '<p class="card-text text-muted small">' + dish.description + '</p>' +
+                        '<div class="d-flex justify-content-between align-items-center">' +
+                        '<span class="dish-price">¥' + dish.price.toFixed(2) + '</span>' +
+                        '<span class="category-badge">' + dish.category + '</span>' +
+                        '</div>' +
+                        '<div class="mt-2">' +
+                        '<button class="btn btn-sm btn-outline-primary" onclick="editDish(' + dish.id + ')">编辑</button>' +
+                        '<button class="btn btn-sm btn-outline-danger" onclick="deleteDish(' + dish.id + ')">删除</button>' +
+                        '</div>' +
+                        '</div>' +
+                        '</div>' +
+                        '</div>';
+                });
+                document.getElementById('dish-list').innerHTML = html || '<div class="col-12 text-center text-muted py-4">暂无菜品</div>';
+            });
+        }
+
+        function showDishModal() {
+            editMode = false;
+            document.getElementById('dishModalTitle').textContent = '添加菜品';
+            document.getElementById('dish-id').value = '';
+            document.getElementById('dish-name').value = '';
+            document.getElementById('dish-description').value = '';
+            document.getElementById('dish-price').value = '';
+            document.getElementById('dish-category').value = '肉类';
+            new bootstrap.Modal(document.getElementById('dishModal')).show();
+        }
+
+        function editDish(id) {
+            fetch('/dishes/' + id).then(function(r) { return r.json(); }).then(function(dish) {
+                editMode = true;
+                document.getElementById('dishModalTitle').textContent = '编辑菜品';
+                document.getElementById('dish-id').value = dish.id;
+                document.getElementById('dish-name').value = dish.name;
+                document.getElementById('dish-description').value = dish.description || '';
+                document.getElementById('dish-price').value = dish.price;
+                document.getElementById('dish-category').value = dish.category;
+                new bootstrap.Modal(document.getElementById('dishModal')).show();
+            });
+        }
+
+        function saveDish() {
+            var data = {
+                name: document.getElementById('dish-name').value,
+                description: document.getElementById('dish-description').value,
+                price: parseFloat(document.getElementById('dish-price').value),
+                category: document.getElementById('dish-category').value
+            };
+            if (!data.name || !data.price) {
+                alert('请填写菜品名称和价格');
+                return;
+            }
+            var url = '/dishes/add';
+            if (editMode) {
+                url = '/dishes/update/' + document.getElementById('dish-id').value;
+            }
+            fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            }).then(function(r) { return r.json(); }).then(function(result) {
+                if (result.error) {
+                    alert(result.error);
+                } else {
+                    bootstrap.Modal.getInstance(document.getElementById('dishModal')).hide();
+                    loadDishes();
+                }
+            });
+        }
+
+        function deleteDish(id) {
+            if (!confirm('确定要删除这个菜品吗？')) return;
+            fetch('/dishes/delete/' + id, { method: 'POST' }).then(function(r) { return r.json(); }).then(function(result) {
+                if (result.error) {
+                    alert(result.error);
+                } else {
+                    loadDishes();
+                }
+            });
+        }
+
+        function loadTables() {
+            fetch('/tables').then(function(r) { return r.json(); }).then(function(data) {
+                var html = '';
+                (data || []).forEach(function(table) {
+                    var statusClass = 'free';
+                    var statusText = '空闲';
+                    if (table.status === '使用中') { statusClass = 'using'; statusText = '使用中'; }
+                    html += '<div class="col-md-2 mb-3">' +
+                        '<div class="table-card ' + statusClass + '">' +
+                        '<h5>' + table.number + '</h5>' +
+                        '<small>' + table.seats + '人桌</small>' +
+                        '<div class="mt-2"><span class="badge ' + (statusClass === 'free' ? 'bg-success' : 'bg-warning') + '">' + statusText + '</span></div>' +
+                        '<button class="btn btn-sm btn-outline-danger mt-2" onclick="deleteTable(' + table.id + ')">删除</button>' +
+                        '</div>' +
+                        '</div>';
+                });
+                document.getElementById('table-list').innerHTML = html || '<div class="col-12 text-center text-muted py-4">暂无桌台</div>';
+            });
+        }
+
+        function showTableModal() {
+            document.getElementById('table-id').value = '';
+            document.getElementById('table-number').value = '';
+            document.getElementById('table-seats').value = '4';
+            new bootstrap.Modal(document.getElementById('tableModal')).show();
+        }
+
+        function saveTable() {
+            var data = {
+                number: document.getElementById('table-number').value,
+                seats: parseInt(document.getElementById('table-seats').value)
+            };
+            if (!data.number || !data.seats) {
+                alert('请填写桌台号和座位数');
+                return;
+            }
+            fetch('/tables/add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            }).then(function(r) { return r.json(); }).then(function(result) {
+                if (result.error) {
+                    alert(result.error);
+                } else {
+                    bootstrap.Modal.getInstance(document.getElementById('tableModal')).hide();
+                    loadTables();
+                }
+            });
+        }
+
+        function deleteTable(id) {
+            if (!confirm('确定要删除这个桌台吗？')) return;
+            fetch('/tables/delete/' + id, { method: 'POST' }).then(function(r) { return r.json(); }).then(function(result) {
+                if (result.error) {
+                    alert(result.error);
+                } else {
+                    loadTables();
+                }
+            });
+        }
+
+        function loadOrderPage() {
+            fetch('/tables').then(function(r) { return r.json(); }).then(function(tables) {
+                var html = '<option value="">请选择桌台</option>';
+                (tables || []).filter(function(t) { return t.status === '空闲'; }).forEach(function(table) {
+                    html += '<option value="' + table.id + '">' + table.number + ' (' + table.seats + '人桌)</option>';
+                });
+                document.getElementById('order-table').innerHTML = html;
+            });
+            fetch('/dishes').then(function(r) { return r.json(); }).then(function(dishes) {
+                var categories = {};
+                (dishes || []).forEach(function(dish) {
+                    if (!categories[dish.category]) categories[dish.category] = [];
+                    categories[dish.category].push(dish);
+                });
+                var tabsHtml = '<li class="nav-item"><a class="nav-link active" href="#" onclick="filterDishes(\'all\', this)">全部</a></li>';
+                Object.keys(categories).forEach(function(cat) {
+                    tabsHtml += '<li class="nav-item"><a class="nav-link" href="#" onclick="filterDishes(\'' + cat + '\', this)">' + cat + '</a></li>';
+                });
+                document.getElementById('dish-tabs').innerHTML = tabsHtml;
+                renderOrderDishes(dishes);
+                window.allDishes = dishes;
+            });
+        }
+
+        function renderOrderDishes(dishes) {
+            var html = '';
+            (dishes || []).forEach(function(dish) {
+                if (dish.status !== 1) return;
+                html += '<div class="col-md-4 mb-3">' +
+                    '<div class="card">' +
+                    '<div class="card-body">' +
+                    '<h6>' + dish.name + '</h6>' +
+                    '<small class="text-muted">' + dish.description + '</small>' +
+                    '<div class="d-flex justify-content-between align-items-center mt-2">' +
+                    '<span class="dish-price">¥' + dish.price.toFixed(2) + '</span>' +
+                    '<button class="btn btn-sm btn-primary" onclick="addOrderItem(' + dish.id + ', \'' + dish.name + '\', ' + dish.price + ')">' +
+                    '<i class="bi bi-plus"></i> 添加' +
+                    '</button>' +
+                    '</div>' +
+                    '</div>' +
+                    '</div>' +
+                    '</div>';
+            });
+            document.getElementById('order-dish-list').innerHTML = html || '<div class="col-12 text-center text-muted py-4">暂无菜品</div>';
+        }
+
+        function filterDishes(category, el) {
+            document.querySelectorAll('#dish-tabs .nav-link').forEach(function(link) { link.classList.remove('active'); });
+            el.classList.add('active');
+            if (category === 'all') {
+                renderOrderDishes(window.allDishes);
+            } else {
+                renderOrderDishes(window.allDishes.filter(function(d) { return d.category === category; }));
+            }
+        }
+
+        function addOrderItem(dishId, dishName, price) {
+            var existing = currentOrderItems.find(function(item) { return item.dish_id === dishId; });
+            if (existing) {
+                existing.quantity++;
+                existing.subtotal = existing.price * existing.quantity;
+            } else {
+                currentOrderItems.push({
+                    dish_id: dishId,
+                    dish_name: dishName,
+                    price: price,
+                    quantity: 1,
+                    subtotal: price
+                });
+            }
+            renderOrderItems();
+        }
+
+        function removeOrderItem(dishId) {
+            currentOrderItems = currentOrderItems.filter(function(item) { return item.dish_id !== dishId; });
+            renderOrderItems();
+        }
+
+        function changeQuantity(dishId, delta) {
+            var item = currentOrderItems.find(function(i) { return i.dish_id === dishId; });
+            if (item) {
+                item.quantity += delta;
+                if (item.quantity <= 0) {
+                    removeOrderItem(dishId);
+                } else {
+                    item.subtotal = item.price * item.quantity;
+                    renderOrderItems();
+                }
+            }
+        }
+
+        function renderOrderItems() {
+            var html = '';
+            var total = 0;
+            currentOrderItems.forEach(function(item) {
+                total += item.subtotal;
+                html += '<div class="d-flex justify-content-between align-items-center py-2 border-bottom">' +
+                    '<div>' +
+                    '<strong>' + item.dish_name + '</strong>' +
+                    '<div class="text-danger">¥' + item.price.toFixed(2) + '</div>' +
+                    '</div>' +
+                    '<div class="d-flex align-items-center">' +
+                    '<button class="btn btn-sm btn-outline-secondary" onclick="changeQuantity(' + item.dish_id + ', -1)">-</button>' +
+                    '<span class="mx-2">' + item.quantity + '</span>' +
+                    '<button class="btn btn-sm btn-outline-secondary" onclick="changeQuantity(' + item.dish_id + ', 1)">+</button>' +
+                    '<span class="ms-2 text-danger">¥' + item.subtotal.toFixed(2) + '</span>' +
+                    '<button class="btn btn-sm btn-outline-danger ms-2" onclick="removeOrderItem(' + item.dish_id + ')">' +
+                    '<i class="bi bi-trash"></i>' +
+                    '</button>' +
+                    '</div>' +
+                    '</div>';
+            });
+            document.getElementById('order-items').innerHTML = html || '<div class="text-center text-muted py-3">请选择菜品</div>';
+            document.getElementById('order-total').textContent = '¥' + total.toFixed(2);
+        }
+
+        function submitOrder() {
+            var tableId = document.getElementById('order-table').value;
+            if (!tableId) {
+                alert('请选择桌台');
+                return;
+            }
+            if (currentOrderItems.length === 0) {
+                alert('请选择菜品');
+                return;
+            }
+            var data = {
+                table_id: parseInt(tableId),
+                items: currentOrderItems.map(function(item) {
+                    return { dish_id: item.dish_id, quantity: item.quantity };
+                }),
+                remark: document.getElementById('order-remark').value
+            };
+            fetch('/orders', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            }).then(function(r) { return r.json(); }).then(function(result) {
+                if (result.error) {
+                    alert(result.error);
+                } else {
+                    alert('下单成功！订单号：' + result.order_no);
+                    currentOrderItems = [];
+                    document.getElementById('order-remark').value = '';
+                    renderOrderItems();
+                    loadOrderPage();
+                }
+            });
+        }
+
+        function loadKitchen() {
+            fetch('/kitchen').then(function(r) { return r.json(); }).then(function(data) {
+                var html = '';
+                (data || []).forEach(function(item) {
+                    html += '<div class="kitchen-item">' +
+                        '<div class="d-flex justify-content-between align-items-center">' +
+                        '<div>' +
+                        '<h5 class="mb-1">' + item.dish_name + ' <span class="badge bg-warning">x' + item.quantity + '</span></h5>' +
+                        '<small class="text-muted">桌台: ' + item.table_number + ' | 订单号: ' + item.order_no + '</small>' +
+                        '</div>' +
+                        '<div>' +
+                        '<button class="btn btn-success" onclick="completeKitchen(' + item.id + ')">' +
+                        '<i class="bi bi-check-circle"></i> 出餐完成' +
+                        '</button>' +
+                        '</div>' +
+                        '</div>' +
+                        '</div>';
+                });
+                document.getElementById('kitchen-list').innerHTML = html || '<div class="text-center text-muted py-4">暂无待出餐菜品</div>';
+            });
+        }
+
+        function completeKitchen(id) {
+            fetch('/kitchen/complete/' + id, { method: 'POST' }).then(function(r) { return r.json(); }).then(function(result) {
+                if (result.error) {
+                    alert(result.error);
+                } else {
+                    loadKitchen();
+                }
+            });
+        }
+
+        function loadStatistics() {
+            var start = document.getElementById('stat-start').value;
+            var end = document.getElementById('stat-end').value;
+            var url = '/statistics';
+            if (start || end) {
+                url += '?start_date=' + (start || '') + '&end_date=' + (end || '');
+            }
+            fetch(url).then(function(r) { return r.json(); }).then(function(data) {
+                document.getElementById('stat-total-orders').textContent = data.total_orders || 0;
+                document.getElementById('stat-total-revenue').textContent = '¥' + (data.total_revenue || 0).toFixed(2);
+                var avg = data.total_orders > 0 ? (data.total_revenue / data.total_orders) : 0;
+                document.getElementById('stat-avg-order').textContent = '¥' + avg.toFixed(2);
+
+                var dailyHtml = '';
+                (data.daily_stats || []).forEach(function(stat) {
+                    dailyHtml += '<tr><td>' + stat.date + '</td><td>' + stat.order_count + '</td><td>¥' + stat.total_amount.toFixed(2) + '</td></tr>';
+                });
+                document.getElementById('daily-stats').innerHTML = dailyHtml || '<tr><td colspan="3" class="text-center text-muted">暂无数据</td></tr>';
+
+                var dishHtml = '';
+                (data.dish_stats || []).forEach(function(stat, index) {
+                    var badgeColor = index === 0 ? 'bg-danger' : (index < 3 ? 'bg-warning' : 'bg-secondary');
+                    dishHtml += '<tr><td><span class="badge ' + badgeColor + '">' + (index + 1) + '</span></td><td>' + stat.dish_name + '</td><td>' + stat.total_count + '</td><td>¥' + stat.total_amount.toFixed(2) + '</td></tr>';
+                });
+                document.getElementById('dish-stats').innerHTML = dishHtml || '<tr><td colspan="4" class="text-center text-muted">暂无数据</td></tr>';
+            });
+        }
+
+        window.onload = function() {
+            loadDashboard();
+        };
+
+        setInterval(function() {
+            if (document.getElementById('page-kitchen').style.display !== 'none') {
+                loadKitchen();
+            }
+        }, 5000);
+    </script>
+</body>
+</html>
